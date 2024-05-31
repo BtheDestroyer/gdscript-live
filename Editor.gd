@@ -44,7 +44,8 @@ func build_code_highlighter_colors() -> void:
   ResourceSaver.save(highlighter)
 
 func _ready() -> void:
-  build_code_highlighter_colors()
+  if EngineDebugger.is_active():
+    build_code_highlighter_colors()
 
 @export var code_edit: CodeEdit
 @export var entrypoint_field: LineEdit

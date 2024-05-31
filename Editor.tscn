@@ -15,40 +15,53 @@ code_edit = NodePath("HSplitContainer/CodeEdit")
 entrypoint_field = NodePath("HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
 output_label = NodePath("HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="Header" type="MarginContainer" parent="."]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="MenuBar" type="HBoxContainer" parent="MarginContainer"]
+[node name="MenuBar" type="HBoxContainer" parent="Header"]
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MenuBar"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Header/MenuBar"]
 layout_mode = 2
 
-[node name="GodotIcon" type="TextureButton" parent="MarginContainer/MenuBar/HBoxContainer"]
+[node name="GodotIcon" type="TextureButton" parent="Header/MenuBar/HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 texture_normal = ExtResource("2_2qrsv")
 ignore_texture_size = true
 stretch_mode = 4
 
-[node name="Label" type="Label" parent="MarginContainer/MenuBar/HBoxContainer"]
+[node name="Label" type="Label" parent="Header/MenuBar/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "GDScript.Live"
 
-[node name="Links" type="HBoxContainer" parent="MarginContainer/MenuBar"]
+[node name="Links" type="HBoxContainer" parent="Header/MenuBar"]
 layout_mode = 2
+theme_override_constants/separation = 16
 
-[node name="Docs" type="Label" parent="MarginContainer/MenuBar/Links"]
+[node name="Docs" type="LinkButton" parent="Header/MenuBar/Links"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.633757, 0.633757, 0.633757, 1)
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.696886, 0.696886, 0.696886, 1)
 theme_override_font_sizes/font_size = 24
 text = "Docs"
+underline = 1
+uri = "https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html"
+
+[node name="Source" type="LinkButton" parent="Header/MenuBar/Links"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.696886, 0.696886, 0.696886, 1)
+theme_override_font_sizes/font_size = 24
+text = "Source"
+underline = 1
+uri = "https://github.com/BtheDestroyer/gdscript-live"
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 2
@@ -112,6 +125,29 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 
-[connection signal="pressed" from="MarginContainer/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Padding" type="Control" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Copyright" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "GDScript.Live software and website © Bryce Dixon, 2024"
+
+[node name="Padding2" type="Control" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[connection signal="pressed" from="Header/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
 [connection signal="pressed" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
 [connection signal="meta_clicked" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
