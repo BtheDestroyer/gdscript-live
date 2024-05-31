@@ -1,6 +1,13 @@
 extends Control
 
-func build_code_highlighter_colors() -> void:
+@export var code_edit: CodeEdit
+@export var entrypoint_field: LineEdit
+@export var output_label: RichTextLabel
+@onready var bootstrap_header := r"""
+var GDScriptLive = instance_from_id(%d)
+""" % [get_instance_id()]
+
+func _build_code_highlighter_colors() -> void:
   var highlighter: CodeHighlighter = load("res://CodeHighlighter.tres")
   highlighter.clear_keyword_colors()
   highlighter.clear_color_regions()
@@ -43,16 +50,33 @@ func build_code_highlighter_colors() -> void:
   highlighter.add_color_region("##", "", DOC_COMMENT, true)
   ResourceSaver.save(highlighter)
 
+func _get_url_params() -> Dictionary:
+  var search := str(JavaScriptBridge.eval("window.location.search"))
+  if search.is_empty():
+    return {}
+  search = search.substr(1)
+  if search.is_empty():
+    return {}
+  var params := {}
+  for param in search.split("&"):
+    var key_value_pair := param.split("=")
+    match key_value_pair.size():
+      1:
+        params[key_value_pair[0]] = null
+      2:
+        params[key_value_pair[0]] = key_value_pair[1]
+  return params
+
+func _load_script_from_url() -> void:
+  var url_params := _get_url_params()
+  var script_b64 = url_params.get("script")
+  if script_b64:
+    code_edit.text = Marshalls.base64_to_utf8(script_b64)
+
 func _ready() -> void:
   if EngineDebugger.is_active():
-    build_code_highlighter_colors()
-
-@export var code_edit: CodeEdit
-@export var entrypoint_field: LineEdit
-@export var output_label: RichTextLabel
-@onready var bootstrap_header := r"""
-var GDScriptLive = instance_from_id(%d)
-""" % [get_instance_id()]
+    _build_code_highlighter_colors()
+  _load_script_from_url()
 
 func user_print(messages: Array):
   _print_raw("".join(messages.map(str)))
@@ -157,3 +181,11 @@ func _on_godot_icon_pressed() -> void:
 
 func _on_output_meta_clicked(meta: Variant) -> void:
   OS.shell_open(str(meta))
+
+func _on_share_pressed() -> void:
+  var url_root := str(JavaScriptBridge.eval("""window.location.protocol + "//" + window.location.host + window.location.pathname"""))
+  var script_b64 := Marshalls.utf8_to_base64(code_edit.text)
+  var full_url := url_root + "?script=" + script_b64
+  DisplayServer.clipboard_set(full_url)
+  JavaScriptBridge.eval("history.pushState(null, null, \"" + full_url + "\")")
+  _print("Copied script URL to clipboard")

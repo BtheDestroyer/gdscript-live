@@ -115,6 +115,11 @@ custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 text = "Run"
 
+[node name="Share" type="Button" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+text = "Share"
+
 [node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -132,22 +137,14 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="Copyright" type="Label" parent="MarginContainer"]
 layout_mode = 2
-
-[node name="Padding" type="Control" parent="MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Copyright" type="Label" parent="MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "GDScript.Live software and website © Bryce Dixon, 2024"
-
-[node name="Padding2" type="Control" parent="MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "GDScript.Live software and website © Bryce Dixon, 2024
+Godot software and logo © 2007-2024 Juan Linietsky, Ariel Manzur and contributors."
+horizontal_alignment = 1
 
 [connection signal="pressed" from="Header/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
 [connection signal="pressed" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
+[connection signal="pressed" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Share" to="." method="_on_share_pressed"]
 [connection signal="meta_clicked" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
