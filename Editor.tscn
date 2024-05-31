@@ -1,0 +1,117 @@
+[gd_scene load_steps=4 format=3 uid="uid://h5n2uetb7f1i"]
+
+[ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
+[ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
+[ext_resource type="CodeHighlighter" uid="uid://6c7ikb2hinka" path="res://CodeHighlighter.tres" id="2_gawum"]
+
+[node name="Editor" type="VBoxContainer" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mry5n")
+code_edit = NodePath("HSplitContainer/CodeEdit")
+entrypoint_field = NodePath("HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
+output_label = NodePath("HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="MenuBar" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MenuBar"]
+layout_mode = 2
+
+[node name="GodotIcon" type="TextureButton" parent="MarginContainer/MenuBar/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture_normal = ExtResource("2_2qrsv")
+ignore_texture_size = true
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="MarginContainer/MenuBar/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "GDScript.Live"
+
+[node name="Links" type="HBoxContainer" parent="MarginContainer/MenuBar"]
+layout_mode = 2
+
+[node name="Docs" type="Label" parent="MarginContainer/MenuBar/Links"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.633757, 0.633757, 0.633757, 1)
+theme_override_font_sizes/font_size = 24
+text = "Docs"
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CodeEdit" type="CodeEdit" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "func main() -> int:
+  print(\"Hello, [url=https://gdscript.live/]https://gdscript.live/[/url]\")
+  return 1
+"
+syntax_highlighter = ExtResource("2_gawum")
+highlight_all_occurrences = true
+highlight_current_line = true
+draw_tabs = true
+draw_spaces = true
+symbol_lookup_on_click = true
+line_folding = true
+gutters_draw_line_numbers = true
+gutters_draw_fold_gutter = true
+code_completion_enabled = true
+auto_brace_completion_enabled = true
+
+[node name="PanelContainer" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Entrypoint" type="LineEdit" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "main"
+placeholder_text = "Entrypoint function"
+alignment = 2
+
+[node name="Run" type="Button" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+text = "Run"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Output" type="RichTextLabel" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[connection signal="pressed" from="MarginContainer/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
+[connection signal="pressed" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
+[connection signal="meta_clicked" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
