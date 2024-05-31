@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
 [ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
-[ext_resource type="CodeHighlighter" uid="uid://6c7ikb2hinka" path="res://CodeHighlighter.tres" id="2_gawum"]
+[ext_resource type="CodeHighlighter" uid="uid://defttl7r5ygku" path="res://CodeHighlighter.tres" id="2_gawum"]
 
 [node name="Editor" type="VBoxContainer" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label")]
 anchors_preset = 15

@@ -97,6 +97,7 @@ func _re_replace(source: String, re: RegEx, replace_callback: Callable):
     var replacement: String = replace_callback.call(re_match)
     source = source.substr(0, re_match.get_start()) + replacement + source.substr(re_match.get_end())
     start = re_match.get_start() + replacement.length()
+  return source
 
 func _postprocess_script(source: String):
   source = _re_replace(source, RegEx.create_from_string(r"([$\s])print\(([^\)]+)\)"), func(re_match):
