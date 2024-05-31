@@ -71,7 +71,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 text = "func main() -> int:
-  print(\"Hello, [url=https://gdscript.live/]https://gdscript.live/[/url]\")
+  print_rich(\"Hello, [url=https://gdscript.live/]https://gdscript.live/[/url]\")
   return 1
 "
 syntax_highlighter = ExtResource("2_gawum")
