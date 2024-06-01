@@ -78,7 +78,6 @@ func _ready() -> void:
   if EngineDebugger.is_active():
     _build_code_highlighter_colors()
   _load_script_from_url()
-  modals.add_modal(preload("res://Modals/TestModal.tscn").instantiate())
 
 func user_print(messages: Array):
   _print_raw("".join(messages.map(str)))
@@ -191,3 +190,6 @@ func _on_share_pressed() -> void:
   DisplayServer.clipboard_set(full_url)
   JavaScriptBridge.eval("history.pushState(null, null, \"" + full_url + "\")")
   _print("Copied script URL to clipboard")
+
+func _on_about_pressed() -> void:
+  modals.add_modal_prefab(preload("res://Modals/About.tscn"))

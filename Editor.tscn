@@ -52,6 +52,7 @@ layout_mode = 2
 [node name="GodotIcon" type="TextureButton" parent="VBoxContainer/Header/MenuBar/HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
+focus_mode = 1
 texture_normal = ExtResource("2_2qrsv")
 ignore_texture_size = true
 stretch_mode = 4
@@ -72,7 +73,7 @@ theme_override_colors/font_color = Color(0.696886, 0.696886, 0.696886, 1)
 theme_override_font_sizes/font_size = 24
 text = "Docs"
 underline = 1
-uri = "https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html"
+uri = "https://docs.godotengine.org/en/latest/tutorials/scripting/gdscript/gdscript_basics.html"
 
 [node name="Source" type="LinkButton" parent="VBoxContainer/Header/MenuBar/Links"]
 layout_mode = 2
@@ -82,6 +83,14 @@ theme_override_font_sizes/font_size = 24
 text = "Source"
 underline = 1
 uri = "https://github.com/BtheDestroyer/gdscript-live"
+
+[node name="About" type="LinkButton" parent="VBoxContainer/Header/MenuBar/Links"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.696886, 0.696886, 0.696886, 1)
+theme_override_font_sizes/font_size = 24
+text = "About"
+underline = 1
 
 [node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -172,6 +181,7 @@ Godot software and logo © 2007-2024 Juan Linietsky, Ariel Manzur and contributo
 horizontal_alignment = 1
 
 [node name="Modals" type="Control" parent="." node_paths=PackedStringArray("backdrop")]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -192,6 +202,7 @@ mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
 [connection signal="pressed" from="VBoxContainer/Header/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
+[connection signal="pressed" from="VBoxContainer/Header/MenuBar/Links/About" to="." method="_on_about_pressed"]
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Share" to="." method="_on_share_pressed"]
 [connection signal="meta_clicked" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]

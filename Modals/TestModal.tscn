@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://br7naqveses8y"]
+[gd_scene load_steps=4 format=3 uid="uid://br7naqveses8y"]
 
 [ext_resource type="Script" path="res://Modals/Modal.gd" id="1_rxn2x"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_jaqi6"]
+device = -1
+keycode = 4194309
+
+[sub_resource type="Shortcut" id="Shortcut_8q8jx"]
+events = [SubResource("InputEventKey_jaqi6")]
 
 [node name="TestModal" type="PanelContainer" node_paths=PackedStringArray("close_button")]
 anchors_preset = 8
@@ -30,4 +37,5 @@ horizontal_alignment = 1
 [node name="Close" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 focus_mode = 1
+shortcut = SubResource("Shortcut_8q8jx")
 text = "Close"
