@@ -10,7 +10,8 @@ config_version=5
 
 [application]
 
-config/name="gdscript-live"
+config/name="GDScript.Live"
+config/version="1.1"
 run/main_scene="res://Editor.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"

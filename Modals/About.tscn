@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bl01jf46pn7ws"]
+[gd_scene load_steps=6 format=3 uid="uid://bl01jf46pn7ws"]
 
 [ext_resource type="Script" path="res://Modals/Modal.gd" id="1_ga1gr"]
 [ext_resource type="Script" path="res://GodotVersionLabel.gd" id="2_vxpur"]
+[ext_resource type="Script" path="res://ProjectVersionLabel.gd" id="3_3wj74"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_jaqi6"]
 device = -1
@@ -44,9 +45,15 @@ horizontal_alignment = 1
 
 [node name="GodotVersion" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Active Godot Version: 4.3 Beta 1"
+text = "Active Godot Version: WWWWWWWWWW"
 horizontal_alignment = 1
 script = ExtResource("2_vxpur")
+
+[node name="ProjectVersion" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "GDScript.Live Project Version: WWWWWWWWWW"
+horizontal_alignment = 1
+script = ExtResource("3_3wj74")
 
 [node name="Close" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
