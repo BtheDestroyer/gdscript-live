@@ -4,9 +4,12 @@ extends Control
 @export var entrypoint_field: LineEdit
 @export var output_label: RichTextLabel
 @export var modals: Modals
+@export var save_dialog: FileDialog
+@export var load_dialog: FileDialog
 @onready var bootstrap_header := r"""
 var GDScriptLive = instance_from_id(%d)
 """ % [get_instance_id()]
+var script_instance: Object
 
 func _build_code_highlighter_colors() -> void:
   var highlighter: CodeHighlighter = load("res://CodeHighlighter.tres")
@@ -125,17 +128,17 @@ func _re_replace(source: String, re: RegEx, replace_callback: Callable):
   return source
 
 func _postprocess_script(source: String):
-  source = _re_replace(source, RegEx.create_from_string(r"([$\s])print\(([^\)]+)\)"), func(re_match):
-    return re_match.get_string(1) + "GDScriptLive.user_print([" + re_match.get_string(2) + "])"
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)print\((.+)\)(\s*)"), func(re_match):
+    return re_match.get_string(1) + "GDScriptLive.user_print([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
-  source = _re_replace(source, RegEx.create_from_string(r"([$\s])print_rich\(([^\)]+)\)"), func(re_match):
-    return re_match.get_string(1) + "GDScriptLive.user_print_rich([" + re_match.get_string(2) + "])"
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)print_rich\(((.+)\)(\s*)"), func(re_match):
+    return re_match.get_string(1) + "GDScriptLive.user_print_rich([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
-  source = _re_replace(source, RegEx.create_from_string(r"([$\s])push_warning\(([^\)]+)\)"), func(re_match):
-    return re_match.get_string(1) + "GDScriptLive.user_push_warning([" + re_match.get_string(2) + "])"
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)push_warning\(((.+)\)(\s*)"), func(re_match):
+    return re_match.get_string(1) + "GDScriptLive.user_push_warning([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
-  source = _re_replace(source, RegEx.create_from_string(r"([$\s])push_error\(([^\)]+)\)"), func(re_match):
-    return re_match.get_string(1) + "GDScriptLive.user_push_error([" + re_match.get_string(2) + "])"
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)push_error\(((.+)\)(\s*)"), func(re_match):
+    return re_match.get_string(1) + "GDScriptLive.user_push_error([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
   source = bootstrap_header + source
   return source
@@ -156,25 +159,28 @@ func _on_run_pressed() -> void:
       _print_error("Error in script compilation: " + error_string(error))
       return
   var has_entrypoint := false
-  var custom_init_valid := false
+  var has_custom_init := false
   for method_info in script.get_script_method_list():
+    if method_info["name"] == "_init":
+      has_custom_init = true
+    elif method_info["name"] == entrypoint:
+      has_entrypoint = true
+    else:
+      continue
     if method_info["args"].size() > method_info["default_args"].size():
       _print_error(method_info["name"] + " must take 0 non-default parameters")
       return
-    if method_info["name"] == "_init":
-      custom_init_valid = true
-    elif method_info["name"] == entrypoint:
-      has_entrypoint = true
-    if custom_init_valid && has_entrypoint:
+    if has_custom_init && has_entrypoint:
       break
   if not has_entrypoint:
     _print_error("Script has no function with the entrypoint name: " + entrypoint)
     return
-  var instance: Object = script.new()
-  if not is_instance_valid(instance):
+  script_instance = script.new()
+  if not is_instance_valid(script_instance):
     _print_error("Failed to make an instance of the script. It's possible _init() produced an error.")
     return
-  var return_value = instance.call(entrypoint)
+  profiles_active.clear()
+  var return_value = script_instance.call(entrypoint)
   _print("Return: " + str(return_value))
 
 func _on_godot_icon_pressed() -> void:
@@ -193,3 +199,74 @@ func _on_share_pressed() -> void:
 
 func _on_about_pressed() -> void:
   modals.add_modal_prefab(preload("res://Modals/About.tscn"))
+
+func _on_save_pressed() -> void:
+  save_dialog.root_subfolder = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+  save_dialog.popup()
+
+func _on_load_pressed() -> void:
+  load_dialog.root_subfolder = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+  load_dialog.popup()
+
+func _on_save_dialog_file_selected(path: String) -> void:
+  var file := FileAccess.open(path, FileAccess.WRITE)
+  if file == null:
+    _print_error("Failed to save file: " + path)
+    return
+  file.store_string(code_edit.text)
+
+func _on_load_dialog_file_selected(path: String) -> void:
+  var file := FileAccess.open(path, FileAccess.READ)
+  if file == null:
+    _print_error("Failed to open file: " + path)
+    return
+  code_edit.text = file.get_as_text()
+
+const PROFILE_ITERATION_COUNT = 10_000
+const PROFILE_ITERATION_BATCH_COUNT = 1_024
+var profiles_active := []
+func profile(callable: Callable, state := {}, iterations := PROFILE_ITERATION_COUNT) -> void:
+  var min_usec := INF
+  var max_usec := 0.0
+  var total_msec := 0.0
+  var original_state := state.duplicate(true)
+  var hash := callable.hash() ^ state.hash()
+  profiles_active.push_back(hash)
+  profile_start.emit(callable, original_state)
+  var index := 0
+  while index < iterations:
+    var local_state := original_state.duplicate(true).merged({&"index": -1}, true)
+    var batch_count := mini(PROFILE_ITERATION_BATCH_COUNT, iterations - index)
+    var batch_duration_usec := 0
+    var start_usec := 0
+    var end_usec := 0
+    for batch_index in range(batch_count):
+      local_state[&"index"] = index + batch_index
+      start_usec = Time.get_ticks_usec()
+      await callable.call(local_state)
+      end_usec = Time.get_ticks_usec()
+      batch_duration_usec += end_usec - start_usec
+    var average_iteration_usec := float(batch_duration_usec) / float(PROFILE_ITERATION_BATCH_COUNT)
+    min_usec = min(min_usec, average_iteration_usec)
+    max_usec = max(max_usec, average_iteration_usec)
+    total_msec += batch_duration_usec * 0.001
+    if index != 0:
+      await get_tree().process_frame
+      if not profiles_active.has(hash):
+        profile_cancelled.emit(callable, state)
+        return
+    index += PROFILE_ITERATION_BATCH_COUNT
+    var completion := float(index) / float(iterations)
+    profile_progress.emit(callable, original_state, completion)
+  if profiles_active.has(hash):
+    profiles_active.erase(hash)
+  var average_msec := total_msec / iterations
+  var min_msec := min_usec * 0.001
+  var max_msec := max_usec * 0.001
+  _print("Profile result for `%s(%s)`:\n\taverage=%fms\n\tmin=%fms\n\tmax=%fms" % [callable.get_method(), str(original_state), average_msec, min_msec, max_msec])
+  profile_complete.emit(callable, original_state, average_msec, min_msec, max_msec)
+
+signal profile_start(callable: Callable, state: Dictionary)
+signal profile_progress(callable: Callable, state: Dictionary, completion: float)
+signal profile_complete(callable: Callable, state: Dictionary, average_time: float, min_time: float, max_time: float)
+signal profile_cancelled(callable: Callable, state: Dictionary)

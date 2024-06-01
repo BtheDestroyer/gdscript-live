@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://h5n2uetb7f1i"]
+[gd_scene load_steps=10 format=3 uid="uid://h5n2uetb7f1i"]
 
 [ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
 [ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
 [ext_resource type="CodeHighlighter" uid="uid://bv8rnho0afvue" path="res://CodeHighlighter.tres" id="2_gawum"]
 [ext_resource type="Script" path="res://CodeEdit.gd" id="4_bfprn"]
 [ext_resource type="Script" path="res://Modals.gd" id="4_qj8gw"]
+[ext_resource type="Script" path="res://BarChart.gd" id="5_n14s8"]
+[ext_resource type="Script" path="res://ProgressTextContainer.gd" id="6_cjud3"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_jj272"]
 device = -1
@@ -14,7 +16,7 @@ keycode = 4194309
 [sub_resource type="Shortcut" id="Shortcut_5hfdt"]
 events = [SubResource("InputEventKey_jj272")]
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label", "modals")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label", "modals", "save_dialog", "load_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,9 +25,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mry5n")
 code_edit = NodePath("VBoxContainer/HSplitContainer/CodeEdit")
-entrypoint_field = NodePath("VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
-output_label = NodePath("VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output")
+entrypoint_field = NodePath("VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
+output_label = NodePath("VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/ScrollContainer/Output")
 modals = NodePath("Modals")
+save_dialog = NodePath("SaveDialog")
+load_dialog = NodePath("LoadDialog")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -95,6 +99,7 @@ underline = 1
 [node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+split_offset = 200
 
 [node name="CodeEdit" type="CodeEdit" parent="VBoxContainer/HSplitContainer" node_paths=PackedStringArray("run_button")]
 layout_mode = 2
@@ -116,55 +121,183 @@ gutters_draw_fold_gutter = true
 code_completion_enabled = true
 auto_brace_completion_enabled = true
 script = ExtResource("4_bfprn")
-run_button = NodePath("../PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run")
+run_button = NodePath("../VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2/Run")
 
-[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HSplitContainer"]
+[node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HSplitContainer/PanelContainer"]
+[node name="Toolbox" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Entrypoint" type="LineEdit" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Run Entrypoint:"
+
+[node name="Entrypoint" type="LineEdit" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 1
 text = "main"
 placeholder_text = "Entrypoint function"
-alignment = 2
 
-[node name="Run" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Run" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 focus_mode = 1
 shortcut = SubResource("Shortcut_5hfdt")
 text = "Run"
 
-[node name="Share" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Share" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 focus_mode = 1
 text = "Share"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Save" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2"]
+visible = false
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+focus_mode = 1
+text = "Save"
+
+[node name="Load" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2"]
+visible = false
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+focus_mode = 1
+text = "Load
+"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Output" type="RichTextLabel" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="Output" type="RichTextLabel" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
+
+[node name="Profiling" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Profiler Results"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Legend" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="MaxLabel" type="Label" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/Legend"]
+layout_mode = 2
+text = "max"
+
+[node name="Padding" type="Control" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/Legend"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MinLabel" type="Label" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/Legend"]
+layout_mode = 2
+text = "min"
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_scroll_mode = 0
+
+[node name="BarChart" type="Control" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer" node_paths=PackedStringArray("max_label", "min_label", "placeholder_text", "progress_text")]
+custom_minimum_size = Vector2(1, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("5_n14s8")
+max_label = NodePath("../../../Legend/MaxLabel")
+min_label = NodePath("../../../Legend/MinLabel")
+placeholder_text = NodePath("../../PlaceholderText")
+progress_text = NodePath("../../Control/PanelContainer")
+minimum_bar_width = 128.0
+unit = "ms"
+
+[node name="PlaceholderText" type="Label" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer"]
+layout_mode = 2
+text = "Profile a function with
+`GDScriptLive.profile(Callable)`"
+horizontal_alignment = 1
+
+[node name="Control" type="Control" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -43.5
+offset_top = -28.5
+offset_right = 43.5
+offset_bottom = 28.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+mouse_default_cursor_shape = 5
+script = ExtResource("6_cjud3")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/Control/PanelContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="ProgressText" type="Label" parent="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/Control/PanelContainer/MarginContainer"]
+layout_mode = 2
+text = "Profiling...
+0%"
+horizontal_alignment = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -201,8 +334,36 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
+[node name="SaveDialog" type="FileDialog" parent="."]
+ok_button_text = "Save"
+access = 2
+filters = PackedStringArray("*.gdscript;GDScript Files")
+use_native_dialog = true
+
+[node name="LoadDialog" type="FileDialog" parent="."]
+auto_translate_mode = 1
+title = "Open a File"
+size = Vector2i(207, 175)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.gdscript;GDScript Files")
+use_native_dialog = true
+
+[connection signal="profile_cancelled" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_cancelled"]
+[connection signal="profile_complete" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_complete"]
+[connection signal="profile_progress" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_progress"]
+[connection signal="profile_start" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_start"]
 [connection signal="pressed" from="VBoxContainer/Header/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
 [connection signal="pressed" from="VBoxContainer/Header/MenuBar/Links/About" to="." method="_on_about_pressed"]
-[connection signal="pressed" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
-[connection signal="pressed" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Share" to="." method="_on_share_pressed"]
-[connection signal="meta_clicked" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2/Run" to="." method="_on_run_pressed"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2/Run" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_run_pressed"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2/Share" to="." method="_on_share_pressed"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer2/Load" to="." method="_on_load_pressed"]
+[connection signal="meta_clicked" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
+[connection signal="child_entered_tree" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_entered_tree"]
+[connection signal="child_exiting_tree" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_exiting_tree"]
+[connection signal="child_order_changed" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_order_changed"]
+[connection signal="file_selected" from="SaveDialog" to="." method="_on_save_dialog_file_selected"]
+[connection signal="file_selected" from="LoadDialog" to="." method="_on_load_dialog_file_selected"]
