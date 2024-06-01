@@ -197,8 +197,12 @@ func _on_share_pressed() -> void:
   JavaScriptBridge.eval("history.pushState(null, null, \"" + full_url + "\")")
   _print("Copied script URL to clipboard")
 
+var about_modal: Modal
 func _on_about_pressed() -> void:
-  modals.add_modal_prefab(preload("res://Modals/About.tscn"))
+  if is_instance_valid(about_modal):
+    return
+  about_modal = preload("res://Modals/About.tscn").instantiate()
+  modals.add_modal(about_modal)
 
 func _on_save_pressed() -> void:
   save_dialog.root_subfolder = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
