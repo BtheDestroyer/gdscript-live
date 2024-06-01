@@ -1,51 +1,71 @@
-[gd_scene load_steps=4 format=3 uid="uid://h5n2uetb7f1i"]
+[gd_scene load_steps=8 format=3 uid="uid://h5n2uetb7f1i"]
 
 [ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
 [ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
-[ext_resource type="CodeHighlighter" uid="uid://defttl7r5ygku" path="res://CodeHighlighter.tres" id="2_gawum"]
+[ext_resource type="CodeHighlighter" uid="uid://bv8rnho0afvue" path="res://CodeHighlighter.tres" id="2_gawum"]
+[ext_resource type="Script" path="res://CodeEdit.gd" id="4_bfprn"]
+[ext_resource type="Script" path="res://Modals.gd" id="4_qj8gw"]
 
-[node name="Editor" type="VBoxContainer" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label")]
+[sub_resource type="InputEventKey" id="InputEventKey_jj272"]
+device = -1
+ctrl_pressed = true
+keycode = 4194309
+
+[sub_resource type="Shortcut" id="Shortcut_5hfdt"]
+events = [SubResource("InputEventKey_jj272")]
+
+[node name="Editor" type="Control" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label", "modals")]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mry5n")
-code_edit = NodePath("HSplitContainer/CodeEdit")
-entrypoint_field = NodePath("HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
-output_label = NodePath("HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output")
+code_edit = NodePath("VBoxContainer/HSplitContainer/CodeEdit")
+entrypoint_field = NodePath("VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
+output_label = NodePath("VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output")
+modals = NodePath("Modals")
 
-[node name="Header" type="MarginContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="MenuBar" type="HBoxContainer" parent="Header"]
+[node name="MenuBar" type="HBoxContainer" parent="VBoxContainer/Header"]
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Header/MenuBar"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Header/MenuBar"]
 layout_mode = 2
 
-[node name="GodotIcon" type="TextureButton" parent="Header/MenuBar/HBoxContainer"]
+[node name="GodotIcon" type="TextureButton" parent="VBoxContainer/Header/MenuBar/HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 texture_normal = ExtResource("2_2qrsv")
 ignore_texture_size = true
 stretch_mode = 4
 
-[node name="Label" type="Label" parent="Header/MenuBar/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/Header/MenuBar/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "GDScript.Live"
 
-[node name="Links" type="HBoxContainer" parent="Header/MenuBar"]
+[node name="Links" type="HBoxContainer" parent="VBoxContainer/Header/MenuBar"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Docs" type="LinkButton" parent="Header/MenuBar/Links"]
+[node name="Docs" type="LinkButton" parent="VBoxContainer/Header/MenuBar/Links"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.696886, 0.696886, 0.696886, 1)
@@ -54,7 +74,7 @@ text = "Docs"
 underline = 1
 uri = "https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html"
 
-[node name="Source" type="LinkButton" parent="Header/MenuBar/Links"]
+[node name="Source" type="LinkButton" parent="VBoxContainer/Header/MenuBar/Links"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.696886, 0.696886, 0.696886, 1)
@@ -63,13 +83,14 @@ text = "Source"
 underline = 1
 uri = "https://github.com/BtheDestroyer/gdscript-live"
 
-[node name="HSplitContainer" type="HSplitContainer" parent="."]
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CodeEdit" type="CodeEdit" parent="HSplitContainer"]
+[node name="CodeEdit" type="CodeEdit" parent="VBoxContainer/HSplitContainer" node_paths=PackedStringArray("run_button")]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_mode = 1
 text = "func main() -> int:
   print_rich(\"Hello, [url=https://gdscript.live/]https://gdscript.live/[/url]\")
   return 1
@@ -85,66 +106,92 @@ gutters_draw_line_numbers = true
 gutters_draw_fold_gutter = true
 code_completion_enabled = true
 auto_brace_completion_enabled = true
+script = ExtResource("4_bfprn")
+run_button = NodePath("../PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run")
 
-[node name="PanelContainer" type="PanelContainer" parent="HSplitContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HSplitContainer/PanelContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Entrypoint" type="LineEdit" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Entrypoint" type="LineEdit" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_mode = 1
 text = "main"
 placeholder_text = "Entrypoint function"
 alignment = 2
 
-[node name="Run" type="Button" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Run" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
+focus_mode = 1
+shortcut = SubResource("Shortcut_5hfdt")
 text = "Run"
 
-[node name="Share" type="Button" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Share" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
+focus_mode = 1
 text = "Share"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Output" type="RichTextLabel" parent="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="Output" type="RichTextLabel" parent="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="Copyright" type="Label" parent="MarginContainer"]
+[node name="Copyright" type="Label" parent="VBoxContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 text = "GDScript.Live software and website © Bryce Dixon, 2024
 Godot software and logo © 2007-2024 Juan Linietsky, Ariel Manzur and contributors."
 horizontal_alignment = 1
 
-[connection signal="pressed" from="Header/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
-[connection signal="pressed" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
-[connection signal="pressed" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Share" to="." method="_on_share_pressed"]
-[connection signal="meta_clicked" from="HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
+[node name="Modals" type="Control" parent="." node_paths=PackedStringArray("backdrop")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_qj8gw")
+backdrop = NodePath("Backdrop")
+
+[node name="Backdrop" type="ColorRect" parent="Modals"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[connection signal="pressed" from="VBoxContainer/Header/MenuBar/HBoxContainer/GodotIcon" to="." method="_on_godot_icon_pressed"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Run" to="." method="_on_run_pressed"]
+[connection signal="pressed" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Share" to="." method="_on_share_pressed"]
+[connection signal="meta_clicked" from="VBoxContainer/HSplitContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]

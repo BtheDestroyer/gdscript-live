@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://br7naqveses8y"]
+
+[ext_resource type="Script" path="res://Modals/Modal.gd" id="1_rxn2x"]
+
+[node name="TestModal" type="PanelContainer" node_paths=PackedStringArray("close_button")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -181.468
+offset_top = -41.1375
+offset_right = 181.468
+offset_bottom = 41.1375
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rxn2x")
+close_button = NodePath("VBoxContainer/Close")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "welkfhweoifhweoihfoweihfoewihofiwehofihwe
+woighoweihg
+\\woeighoweihgowiegh"
+horizontal_alignment = 1
+
+[node name="Close" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+focus_mode = 1
+text = "Close"

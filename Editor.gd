@@ -3,6 +3,7 @@ extends Control
 @export var code_edit: CodeEdit
 @export var entrypoint_field: LineEdit
 @export var output_label: RichTextLabel
+@export var modals: Modals
 @onready var bootstrap_header := r"""
 var GDScriptLive = instance_from_id(%d)
 """ % [get_instance_id()]
@@ -77,6 +78,7 @@ func _ready() -> void:
   if EngineDebugger.is_active():
     _build_code_highlighter_colors()
   _load_script_from_url()
+  modals.add_modal(preload("res://Modals/TestModal.tscn").instantiate())
 
 func user_print(messages: Array):
   _print_raw("".join(messages.map(str)))
