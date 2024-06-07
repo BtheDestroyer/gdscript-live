@@ -19,7 +19,7 @@ keycode = 4194309
 [sub_resource type="Shortcut" id="Shortcut_5hfdt"]
 events = [SubResource("InputEventKey_jj272")]
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label", "modals", "save_dialog", "load_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("code_edit", "entrypoint_field", "output_label", "modals")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,8 +31,6 @@ code_edit = NodePath("VBoxContainer/HSplitContainer/CodeEdit")
 entrypoint_field = NodePath("VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/HBoxContainer/Entrypoint")
 output_label = NodePath("VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer2/MarginContainer/ScrollContainer/Output")
 modals = NodePath("Modals")
-save_dialog = NodePath("SaveDialog")
-load_dialog = NodePath("LoadDialog")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -183,21 +181,6 @@ tooltip_text = "Generate link for the current script and copy it to the clipboar
 focus_mode = 1
 text = "Share"
 
-[node name="Save" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons"]
-visible = false
-custom_minimum_size = Vector2(96, 0)
-layout_mode = 2
-focus_mode = 1
-text = "Save"
-
-[node name="Load" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons"]
-visible = false
-custom_minimum_size = Vector2(96, 0)
-layout_mode = 2
-focus_mode = 1
-text = "Load
-"
-
 [node name="Settings" type="Button" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons"]
 layout_mode = 2
 tooltip_text = "Settings"
@@ -233,7 +216,7 @@ layout_mode = 2
 [node name="Indentation" type="OptionButton" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Indentation Type"
-selected = 1
+selected = 0
 item_count = 2
 popup/item_0/text = "Tabs"
 popup/item_1/text = "Spaces"
@@ -244,7 +227,7 @@ layout_mode = 2
 tooltip_text = "Indentation Size"
 min_value = 1.0
 max_value = 8.0
-value = 2.0
+value = 4.0
 rounded = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings"]
@@ -264,6 +247,9 @@ allow_greater = true
 allow_lesser = true
 suffix = "%"
 script = ExtResource("7_ebjg8")
+
+[node name="SaveTimer" type="Timer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings"]
+autostart = true
 
 [node name="PanelContainer2" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -426,22 +412,6 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
-[node name="SaveDialog" type="FileDialog" parent="."]
-ok_button_text = "Save"
-access = 2
-filters = PackedStringArray("*.gdscript;GDScript Files")
-use_native_dialog = true
-
-[node name="LoadDialog" type="FileDialog" parent="."]
-auto_translate_mode = 1
-title = "Open a File"
-size = Vector2i(207, 175)
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("*.gdscript;GDScript Files")
-use_native_dialog = true
-
 [connection signal="profile_cancelled" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_cancelled"]
 [connection signal="profile_complete" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_complete"]
 [connection signal="profile_progress" from="." to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_editor_profile_progress"]
@@ -451,15 +421,12 @@ use_native_dialog = true
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Run" to="." method="_on_run_pressed"]
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Run" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_run_pressed"]
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Share" to="." method="_on_share_pressed"]
-[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Save" to="." method="_on_save_pressed"]
-[connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Load" to="." method="_on_load_pressed"]
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Settings" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_settings_pressed"]
 [connection signal="item_selected" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/HBoxContainer/Indentation" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_indentation_item_selected"]
 [connection signal="value_changed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/HBoxContainer/IndentationSize" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_indentation_size_value_changed"]
 [connection signal="value_changed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/HBoxContainer2/PageScale" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_page_scale_value_changed"]
+[connection signal="timeout" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/SaveTimer" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_save_timer_timeout"]
 [connection signal="meta_clicked" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer2/MarginContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
 [connection signal="child_entered_tree" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_entered_tree"]
 [connection signal="child_exiting_tree" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_exiting_tree"]
 [connection signal="child_order_changed" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_order_changed"]
-[connection signal="file_selected" from="SaveDialog" to="." method="_on_save_dialog_file_selected"]
-[connection signal="file_selected" from="LoadDialog" to="." method="_on_load_dialog_file_selected"]

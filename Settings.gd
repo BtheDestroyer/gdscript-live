@@ -6,9 +6,11 @@ extends HFlowContainer
 @export var indentation_size: Range
 @export var code_edit: CodeEdit
 @export var page_scale: Range
+var _dirty := false
 
 const SETTINGS_PATH := "user://settings.json"
 func _load_settings() -> void:
+  print("Loading settings...")
   var file := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
   if file == null:
     push_warning("Couldn't load settings; maybe there are none saved, maybe cookies are disabled")
@@ -25,8 +27,10 @@ func _load_settings() -> void:
   indentation_option.selected = data.get("indentation_type", indentation_option.selected)
   indentation_size.value = data.get("indentation_size", indentation_size.value)
   page_scale.value = data.get("page_scale", page_scale.value)
+  _dirty = false
 
 func _save_settings() -> void:
+  print("Saving settings...")
   var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
   if file == null:
     push_warning("Couldn't load settings; maybe there are none saved, maybe cookies are disabled")
@@ -37,19 +41,17 @@ func _save_settings() -> void:
     "indentation_size": indentation_size.value,
     "page_scale": page_scale.value
   }))
+  _dirty = false
 
 func _ready() -> void:
   _load_settings()
-  primary_container.visible = settings_button.button_pressed
-  set_page_scale(page_scale.value * 0.01)
-
-func _notification(what: int) -> void:
-  match what:
-    NOTIFICATION_EXIT_TREE, NOTIFICATION_WM_CLOSE_REQUEST, NOTIFICATION_CRASH:
-      _save_settings()
+  _on_settings_pressed()
+  _on_page_scale_value_changed(false)
+  _dirty = false
 
 func _on_settings_pressed() -> void:
   primary_container.visible = settings_button.button_pressed
+  _dirty = true
 
 func _reindent_code_edit() -> void:
   var use_spaces := indentation_option.selected == 1
@@ -58,13 +60,20 @@ func _reindent_code_edit() -> void:
 
 func _on_indentation_item_selected(_index: int) -> void:
   _reindent_code_edit()
+  _dirty = true
 
 func _on_indentation_size_value_changed(_value: float) -> void:
   _reindent_code_edit()
+  _dirty = true
 
-func _on_page_scale_value_changed(_value: bool) -> void:
+func _on_page_scale_value_changed(_value: float) -> void:
   set_page_scale(page_scale.value * 0.01)
+  _dirty = true
 
 func set_page_scale(scale: float) -> void:
   get_tree().get_root().content_scale_factor = scale
   page_scale.tooltip_text = "Page Scale: %.0f%%" % [scale * 100]
+
+func _on_save_timer_timeout() -> void:
+  if _dirty:
+    _save_settings()

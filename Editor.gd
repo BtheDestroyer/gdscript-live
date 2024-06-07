@@ -4,8 +4,6 @@ extends Control
 @export var entrypoint_field: LineEdit
 @export var output_label: RichTextLabel
 @export var modals: Modals
-@export var save_dialog: FileDialog
-@export var load_dialog: FileDialog
 @onready var bootstrap_header := r"""
 var GDScriptLive = instance_from_id(%d)
 """ % [get_instance_id()]
@@ -271,28 +269,6 @@ func _on_about_pressed() -> void:
     return
   about_modal = preload("res://Modals/About.tscn").instantiate()
   modals.add_modal(about_modal)
-
-func _on_save_pressed() -> void:
-  save_dialog.root_subfolder = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
-  save_dialog.popup()
-
-func _on_load_pressed() -> void:
-  load_dialog.root_subfolder = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
-  load_dialog.popup()
-
-func _on_save_dialog_file_selected(path: String) -> void:
-  var file := FileAccess.open(path, FileAccess.WRITE)
-  if file == null:
-    _print_error("Failed to save file: " + path)
-    return
-  file.store_string(code_edit.text)
-
-func _on_load_dialog_file_selected(path: String) -> void:
-  var file := FileAccess.open(path, FileAccess.READ)
-  if file == null:
-    _print_error("Failed to open file: " + path)
-    return
-  code_edit.text = file.get_as_text()
 
 const PROFILE_ITERATION_COUNT = 10_000
 const PROFILE_ITERATION_BATCH_COUNT = 1_024
