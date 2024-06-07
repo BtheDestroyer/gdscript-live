@@ -16,9 +16,10 @@ func reindent(use_spaces: bool, indentation_size: int):
   var new_indent := " ".repeat(indentation_size) if use_spaces else "\t"
   var new_text := ""
   var offset := 0
-  var non_indent_regex := RegEx.create_from_string("^(%s)*(?!%s)(.*)$" % [old_indent, old_indent])
+  var regex_source := "^(%s)*(?!%s)(.*)$" % [old_indent, old_indent]
+  var non_indent_regex := RegEx.create_from_string(regex_source)
   while offset < text.length():
-    var current_line := text.substr(offset, text.find("\n", offset))
+    var current_line := text.substr(offset, text.find("\n", offset) - offset)
     var non_indent_match := non_indent_regex.search(current_line)
     if non_indent_match:
       var old_indentation_count := current_line.count(old_indent, 0, non_indent_match.get_end(1))

@@ -128,12 +128,66 @@ func _re_replace(source: String, re: RegEx, replace_callback: Callable):
   return source
 
 enum IndentationType {
+  UNKNOWN,
   TAB,
   SPACE
 }
 
 func _ensure_script_has_no_errors(source: String) -> bool:
-  var indentation_type := IndentationType.SPACE if code_edit.indent_use_spaces else IndentationType.TAB
+  var indentation_type := IndentationType.UNKNOWN
+  var indent_regex := RegEx.create_from_string("^[\t ]+")
+  var last_line := ""
+  var line_index := 0
+  var expected_indentations: Array[String] = [""]
+  for line in source.split("\n"):
+    line_index += 1
+    var regex_match := indent_regex.search(line)
+    if regex_match == null:
+      if not line.is_empty():
+        last_line = line
+        expected_indentations = [""]
+      continue
+    var current_line_indentation := regex_match.get_string()
+    if current_line_indentation.count(current_line_indentation[0]) != current_line_indentation.length():
+      user_push_error(["Indentation mismatch. Mixing tabs and spaces."], line_index)
+      return false
+    var found_indentation_type := IndentationType.SPACE if current_line_indentation[0] == " " else IndentationType.TAB
+    if found_indentation_type != indentation_type:
+      if indentation_type == IndentationType.UNKNOWN:
+        indentation_type = found_indentation_type
+        var expected_indentation_type := IndentationType.SPACE if code_edit.indent_use_spaces else IndentationType.TAB
+        if found_indentation_type != expected_indentation_type:
+          var expected_indentation := "spaces" if expected_indentation_type == IndentationType.SPACE else "tabs"
+          var found_indentation := "spaces" if found_indentation_type == IndentationType.SPACE else "tabs"
+          user_push_warning(["Indentation mismatch with settings. Expected ", expected_indentation, ", but found ", found_indentation], line_index)
+      else:
+        var original_indentation := "spaces" if indentation_type == IndentationType.SPACE else "tabs"
+        var found_indentation := "spaces" if found_indentation_type == IndentationType.SPACE else "tabs"
+        user_push_error(["Indentation mismatch. Switched from ", original_indentation, " to ", found_indentation], line_index)
+        return false
+    if current_line_indentation.length() > expected_indentations.back().length() and not last_line.ends_with(":") and not last_line.ends_with("\\"):
+      user_push_error(["Indentation error. Indentation increased despite prior line not ending with `:` or `\\`"], line_index)
+      return false
+    elif last_line.ends_with(":"):
+      if current_line_indentation.length() > expected_indentations.back().length():
+        var expected_indentation_count := code_edit.indent_size if code_edit.indent_use_spaces else 1
+        if current_line_indentation.length() != expected_indentations.back().length() + expected_indentation_count:
+          user_push_warning(["Indentation mismatch with settings. Expected next level to be ", expected_indentation_count, ", but found ", current_line_indentation.length()], line_index)
+        expected_indentations.push_back(current_line_indentation)
+      else:
+        user_push_error(["Indentation error. Indentation did not increase despite prior line ending with `:`"], line_index)
+        return false
+    else: # Indentation decrease testing
+      while expected_indentations.size() > 0:
+        if current_line_indentation.length() == expected_indentations.back().length():
+          break # Found valid indentation level
+        elif current_line_indentation.length() < expected_indentations.back().length():
+          expected_indentations.pop_back() # Still decreasing
+        else:
+          # Decreased too far or between possible indentations
+          user_push_error(["Indentation error. Indentation decreased to an invalid amount (either too much or too little)."], line_index)
+          return false
+    last_line = line
   return true
 
 func _postprocess_script(source: String) -> String:
@@ -160,6 +214,9 @@ func _on_run_pressed() -> void:
   if entrypoint.is_empty():
     entrypoint_field.text = ""
     _print_error("Entrypoint is empty")
+    return
+  if not _ensure_script_has_no_errors(code_edit.text):
+    _print_error("Script has errors")
     return
   var script := GDScript.new()
   script.source_code = _postprocess_script(code_edit.text)
