@@ -88,11 +88,11 @@ func user_print(messages: Array):
 func user_print_rich(messages: Array):
   _print("".join(messages.map(str)))
 
-func user_push_warning(messages: Array):
-  _print_warning("".join(messages.map(str)))
+func user_push_warning(messages: Array, line: int):
+  _print_warning("".join(messages.map(str)) + "\n\t\tLine: " + str(line))
 
-func user_push_error(messages: Array):
-  _print_error("".join(messages.map(str)))
+func user_push_error(messages: Array, line: int):
+  _print_error("".join(messages.map(str)) + "\n\t\tLine: " + str(line))
 
 func _print(message: String, newline := true) -> void:
   output_label.append_text(message)
@@ -106,13 +106,13 @@ func _print_raw(message: String, newline := true) -> void:
 
 func _print_warning(warning: String) -> void:
   output_label.push_color(Color.YELLOW)
-  _print(warning, false)
+  _print("⚠ " + warning, false)
   output_label.pop()
   output_label.append_text("\n")
 
 func _print_error(error: String) -> void:
   output_label.push_color(Color.RED)
-  _print(error, false)
+  _print("🅧 " + error, false)
   output_label.pop()
   output_label.append_text("\n")
 
@@ -128,17 +128,19 @@ func _re_replace(source: String, re: RegEx, replace_callback: Callable):
   return source
 
 func _postprocess_script(source: String):
-  source = _re_replace(source, RegEx.create_from_string(r"(\s+)print\((.+)\)(\s*)"), func(re_match):
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)print\((.+)\)(\s*)"), func(re_match: RegExMatch):
     return re_match.get_string(1) + "GDScriptLive.user_print([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
-  source = _re_replace(source, RegEx.create_from_string(r"(\s+)print_rich\((.+)\)(\s*)"), func(re_match):
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)print_rich\((.+)\)(\s*)"), func(re_match: RegExMatch):
     return re_match.get_string(1) + "GDScriptLive.user_print_rich([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
-  source = _re_replace(source, RegEx.create_from_string(r"(\s+)push_warning\((.+)\)(\s*)"), func(re_match):
-    return re_match.get_string(1) + "GDScriptLive.user_push_warning([" + re_match.get_string(2) + "])" + re_match.get_string(3)
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)push_warning\((.+)\)(\s*)"), func(re_match: RegExMatch):
+    var line := source.count("\n", 0, re_match.get_end(1))
+    return re_match.get_string(1) + "GDScriptLive.user_push_warning([" + re_match.get_string(2) + "], " + str(line) + ")" + re_match.get_string(3)
   )
-  source = _re_replace(source, RegEx.create_from_string(r"(\s+)push_error\((.+)\)(\s*)"), func(re_match):
-    return re_match.get_string(1) + "GDScriptLive.user_push_error([" + re_match.get_string(2) + "])" + re_match.get_string(3)
+  source = _re_replace(source, RegEx.create_from_string(r"(\s+)push_error\((.+)\)(\s*)"), func(re_match: RegExMatch):
+    var line := source.count("\n", 0, re_match.get_end(1))
+    return re_match.get_string(1) + "GDScriptLive.user_push_error([" + re_match.get_string(2) + "], " + str(line) + ")" + re_match.get_string(3)
   )
   source = bootstrap_header + source
   return source
