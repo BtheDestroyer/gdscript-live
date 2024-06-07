@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
 [ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
-[ext_resource type="CodeHighlighter" path="res://CodeHighlighter.tres" id="2_gawum"]
+[ext_resource type="CodeHighlighter" uid="uid://6k6m5w50yhpk" path="res://CodeHighlighter.tres" id="2_gawum"]
 [ext_resource type="Script" path="res://AspectRatioSplitContainer.gd" id="3_mexdo"]
 [ext_resource type="Script" path="res://CodeEdit.gd" id="4_bfprn"]
 [ext_resource type="Script" path="res://Modals.gd" id="4_qj8gw"]
@@ -242,6 +242,7 @@ value = 2.0
 rounded = true
 
 [node name="PageScale" type="HSlider" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings"]
+visible = false
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 size_flags_vertical = 1
