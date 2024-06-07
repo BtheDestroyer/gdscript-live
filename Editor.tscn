@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://h5n2uetb7f1i"]
+[gd_scene load_steps=12 format=3 uid="uid://h5n2uetb7f1i"]
 
 [ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
 [ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
-[ext_resource type="CodeHighlighter" uid="uid://bv8rnho0afvue" path="res://CodeHighlighter.tres" id="2_gawum"]
+[ext_resource type="CodeHighlighter" path="res://CodeHighlighter.tres" id="2_gawum"]
+[ext_resource type="Script" path="res://AspectRatioSplitContainer.gd" id="3_mexdo"]
 [ext_resource type="Script" path="res://CodeEdit.gd" id="4_bfprn"]
 [ext_resource type="Script" path="res://Modals.gd" id="4_qj8gw"]
 [ext_resource type="Script" path="res://Settings.gd" id="5_i5jg0"]
@@ -100,11 +101,13 @@ underline = 1
 [node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-split_offset = 200
+split_offset = -600
+script = ExtResource("3_mexdo")
 
 [node name="CodeEdit" type="CodeEdit" parent="VBoxContainer/HSplitContainer" node_paths=PackedStringArray("run_button")]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 focus_mode = 1
 text = "func main() -> int:
   print_rich(\"Hello, [url=https://gdscript.live/]https://gdscript.live/[/url]\")
@@ -129,7 +132,7 @@ run_button = NodePath("../VSplitContainer/Toolbox/MarginContainer/VBoxContainer/
 
 [node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer/HSplitContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
+script = ExtResource("3_mexdo")
 
 [node name="Toolbox" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer"]
 layout_mode = 2
@@ -211,7 +214,7 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="Settings" type="HFlowContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer" node_paths=PackedStringArray("primary_container", "settings_button", "indentation_option", "indentation_size", "code_edit")]
+[node name="Settings" type="HFlowContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer" node_paths=PackedStringArray("primary_container", "settings_button", "indentation_option", "indentation_size", "code_edit", "page_scale")]
 layout_mode = 2
 script = ExtResource("5_i5jg0")
 primary_container = NodePath("../..")
@@ -219,6 +222,7 @@ settings_button = NodePath("../../../Buttons/Settings")
 indentation_option = NodePath("Indentation")
 indentation_size = NodePath("IndentationSize")
 code_edit = NodePath("../../../../../../../CodeEdit")
+page_scale = NodePath("PageScale")
 
 [node name="Indentation" type="OptionButton" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings"]
 layout_mode = 2
@@ -236,6 +240,15 @@ min_value = 1.0
 max_value = 8.0
 value = 2.0
 rounded = true
+
+[node name="PageScale" type="HSlider" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+size_flags_vertical = 1
+min_value = 50.0
+max_value = 400.0
+step = 10.0
+value = 100.0
 
 [node name="PanelContainer2" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -428,6 +441,7 @@ use_native_dialog = true
 [connection signal="pressed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/Buttons/Settings" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_settings_pressed"]
 [connection signal="item_selected" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/Indentation" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_indentation_item_selected"]
 [connection signal="value_changed" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/IndentationSize" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_indentation_size_value_changed"]
+[connection signal="drag_ended" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings/PageScale" to="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/Settings" method="_on_page_scale_drag_ended"]
 [connection signal="meta_clicked" from="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer/PanelContainer2/MarginContainer/ScrollContainer/Output" to="." method="_on_output_meta_clicked"]
 [connection signal="child_entered_tree" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_entered_tree"]
 [connection signal="child_exiting_tree" from="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" to="VBoxContainer/HSplitContainer/VSplitContainer/Profiling/MarginContainer/VBoxContainer/HBoxContainer/PanelContainer/ScrollContainer/BarChart" method="_on_child_exiting_tree"]

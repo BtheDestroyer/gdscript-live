@@ -5,6 +5,7 @@ extends HFlowContainer
 @export var indentation_option: OptionButton
 @export var indentation_size: SpinBox
 @export var code_edit: CodeEdit
+@export var page_scale: Slider
 
 func _load_settings() -> void:
   pass # TODO
@@ -34,3 +35,9 @@ func _on_indentation_item_selected(_index: int) -> void:
 
 func _on_indentation_size_value_changed(_value: float) -> void:
   _reindent_code_edit()
+
+func _on_page_scale_drag_ended(_value_changed: bool) -> void:
+  set_page_scale(page_scale.value * 0.01)
+
+func set_page_scale(scale: float) -> void:
+  ThemeDB.get_project_theme().default_base_scale = scale
