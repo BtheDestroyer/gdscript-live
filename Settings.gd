@@ -72,7 +72,7 @@ func _on_page_scale_value_changed(_value: float) -> void:
 
 func set_page_scale(scale: float) -> void:
   get_tree().get_root().content_scale_factor = scale
-  page_scale.tooltip_text = "Page Scale: %.0f%%" % [scale * 100]
+  page_scale.tooltip_text = "Page Scale\nCtrl+'-': Smaller\nCtrl+'+': Bigger\nCtrl+'0': 100%"
 
 func _on_save_timer_timeout() -> void:
   if _dirty:

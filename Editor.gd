@@ -76,6 +76,7 @@ func _load_script_from_url() -> void:
     code_edit.text = Marshalls.base64_to_utf8(script_b64)
 
 func _ready() -> void:
+  
   if EngineDebugger.is_active():
     _build_code_highlighter_colors()
   _load_script_from_url()

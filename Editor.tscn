@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://h5n2uetb7f1i"]
+[gd_scene load_steps=14 format=3 uid="uid://h5n2uetb7f1i"]
 
 [ext_resource type="Script" path="res://Editor.gd" id="1_mry5n"]
 [ext_resource type="Texture2D" uid="uid://btq2d0ybk84py" path="res://icon_color.svg" id="2_2qrsv"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Settings.gd" id="5_i5jg0"]
 [ext_resource type="Script" path="res://BarChart.gd" id="5_n14s8"]
 [ext_resource type="Script" path="res://ProgressTextContainer.gd" id="6_cjud3"]
+[ext_resource type="Texture2D" uid="uid://dhpnifmoy7mkf" path="res://Gear.svg" id="6_xvtfb"]
 [ext_resource type="Script" path="res://PageScale.gd" id="7_ebjg8"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_jj272"]
@@ -186,7 +187,7 @@ layout_mode = 2
 tooltip_text = "Settings"
 focus_mode = 1
 toggle_mode = true
-text = " ⚙ "
+icon = ExtResource("6_xvtfb")
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HSplitContainer/VSplitContainer/Toolbox/MarginContainer/VBoxContainer"]
 layout_mode = 2
