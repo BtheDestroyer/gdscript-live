@@ -55,6 +55,31 @@ text = "GDScript.Live Project Version: WWWWWWWWWW"
 horizontal_alignment = 1
 script = ExtResource("3_3wj74")
 
+[node name="Profiling" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "To use the profiler feature, write functions you'd like to test the performance of and call:
+GDScriptLive.profile(callable: Callable, state := {}, iterations := PROFILE_ITERATION_COUNT)
+from your entrypoint function. For example:"
+horizontal_alignment = 1
+
+[node name="ProfilingExample" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "func foo(state: Dictionary):
+    print(str(state[&\"index\"])) # Current profile iteration index
+func bar(state: Dictionary):
+    pass
+func main(): # Entrypoint
+    GDScriptLive.profile(foo) # Test function 1
+    GDScriptLive.profile(bar) # Test function 2
+    GDScriptLive.profile(foo, {\"a\": \"b\"}) # Provide custom state"
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+scroll_fit_content_height = true
+
 [node name="Close" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 focus_mode = 1

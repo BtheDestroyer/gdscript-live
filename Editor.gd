@@ -127,7 +127,16 @@ func _re_replace(source: String, re: RegEx, replace_callback: Callable):
     start = re_match.get_start() + replacement.length()
   return source
 
-func _postprocess_script(source: String):
+enum IndentationType {
+  TAB,
+  SPACE
+}
+
+func _ensure_script_has_no_errors(source: String) -> bool:
+  var indentation_type := IndentationType.SPACE if code_edit.indent_use_spaces else IndentationType.TAB
+  return true
+
+func _postprocess_script(source: String) -> String:
   source = _re_replace(source, RegEx.create_from_string(r"(\s+)print\((.+)\)(\s*)"), func(re_match: RegExMatch):
     return re_match.get_string(1) + "GDScriptLive.user_print([" + re_match.get_string(2) + "])" + re_match.get_string(3)
   )
