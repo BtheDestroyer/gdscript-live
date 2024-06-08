@@ -61,9 +61,10 @@ func _get_url_params() -> Dictionary:
   search = search.substr(1)
   if search.is_empty():
     return {}
+  var split_search := search.split("&")
   var params := {}
-  for param in search.split("&"):
-    var key_value_pair := param.split("=")
+  for param in split_search:
+    var key_value_pair := param.split("=", true, 1)
     match key_value_pair.size():
       1:
         params[key_value_pair[0]] = null
@@ -79,7 +80,7 @@ func _load_script_from_url() -> void:
 func _ready() -> void:
   if EngineDebugger.is_active():
     _build_code_highlighter_colors()
-  code_edit.text = (preload("res://DefaultScript.gd") as Script).source_code
+  code_edit.text = FileAccess.get_file_as_string("res://DefaultScript.txt")
   settings._load_settings()
   if url_params.has("indent_type") or url_params.has("indent_size"):
     settings.indentation_option.selected = url_params.get("indent_type", 1 if code_edit.indent_use_spaces else 0)

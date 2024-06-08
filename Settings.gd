@@ -27,7 +27,7 @@ func _load_settings() -> void:
   indentation_option.selected = data.get("indentation_type", indentation_option.selected)
   indentation_size.value = data.get("indentation_size", indentation_size.value)
   page_scale.value = data.get("page_scale", page_scale.value)
-  
+
   # Apply settings
   _on_settings_pressed()
   _on_page_scale_value_changed(false)
