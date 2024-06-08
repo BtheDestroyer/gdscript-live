@@ -1,4 +1,4 @@
-extends Control
+class_name _GDScriptLive extends Control
 
 @export var code_edit: CodeEdit
 @export var entrypoint_field: LineEdit
@@ -7,6 +7,7 @@ extends Control
 @onready var bootstrap_header := r"""
 var GDScriptLive = instance_from_id(%d)
 """ % [get_instance_id()]
+@export var settings: _Settings
 var script_instance: Object
 
 func _build_code_highlighter_colors() -> void:
@@ -52,6 +53,7 @@ func _build_code_highlighter_colors() -> void:
   highlighter.add_color_region("##", "", DOC_COMMENT, true)
   ResourceSaver.save(highlighter)
 
+@onready var url_params := _get_url_params()
 func _get_url_params() -> Dictionary:
   var search := str(JavaScriptBridge.eval("window.location.search"))
   if search.is_empty():
@@ -70,16 +72,20 @@ func _get_url_params() -> Dictionary:
   return params
 
 func _load_script_from_url() -> void:
-  var url_params := _get_url_params()
   var script_b64 = url_params.get("script")
   if script_b64:
     code_edit.text = Marshalls.base64_to_utf8(script_b64)
 
 func _ready() -> void:
-  
   if EngineDebugger.is_active():
     _build_code_highlighter_colors()
-  _load_script_from_url()
+  code_edit.text = (preload("res://DefaultScript.gd") as Script).source_code
+  settings._load_settings()
+  if url_params.has("indent_type") or url_params.has("indent_size"):
+    settings.indentation_option.selected = url_params.get("indent_type", 1 if code_edit.indent_use_spaces else 0)
+    settings.indentation_size.value = url_params.get("indent_size", code_edit.indent_size)
+    settings._reindent_code_edit()
+  _load_script_from_url() # Assume the encoded script is already indented properly
 
 func user_print(messages: Array):
   _print_raw("".join(messages.map(str)))
@@ -259,7 +265,7 @@ func _on_output_meta_clicked(meta: Variant) -> void:
 func _on_share_pressed() -> void:
   var url_root := str(JavaScriptBridge.eval("""window.location.protocol + "//" + window.location.host + window.location.pathname"""))
   var script_b64 := Marshalls.utf8_to_base64(code_edit.text)
-  var full_url := url_root + "?script=" + script_b64
+  var full_url := url_root + "?script=" + script_b64 + "&indent_type=" + str(1 if code_edit.indent_use_spaces else 0) + "&indent_size=" + str(code_edit.indent_size)
   DisplayServer.clipboard_set(full_url)
   JavaScriptBridge.eval("history.pushState(null, null, \"" + full_url + "\")")
   _print("Copied script URL to clipboard")

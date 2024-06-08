@@ -1,4 +1,4 @@
-extends HFlowContainer
+class_name _Settings extends HFlowContainer
 
 @export var primary_container: Control
 @export var settings_button: Button
@@ -27,6 +27,11 @@ func _load_settings() -> void:
   indentation_option.selected = data.get("indentation_type", indentation_option.selected)
   indentation_size.value = data.get("indentation_size", indentation_size.value)
   page_scale.value = data.get("page_scale", page_scale.value)
+  
+  # Apply settings
+  _on_settings_pressed()
+  _on_page_scale_value_changed(false)
+  _reindent_code_edit()
   _dirty = false
 
 func _save_settings() -> void:
@@ -41,12 +46,6 @@ func _save_settings() -> void:
     "indentation_size": indentation_size.value,
     "page_scale": page_scale.value
   }))
-  _dirty = false
-
-func _ready() -> void:
-  _load_settings()
-  _on_settings_pressed()
-  _on_page_scale_value_changed(false)
   _dirty = false
 
 func _on_settings_pressed() -> void:
