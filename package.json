@@ -9,6 +9,7 @@
   "author": "Bryce Dixon",
   "license": "MIT",
   "dependencies": {
+    "mime-types": "^2.1.35",
     "yaml": "^2.5.1"
   }
 }
