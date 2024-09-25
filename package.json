@@ -1,0 +1,11 @@
+{
+  "name": "gdscript.live",
+  "version": "2.0.0",
+  "description": "Website for testing and profiling GDScript programs for the Godot game engine.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bryce Dixon",
+  "license": "MIT"
+}
