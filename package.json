@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bryce Dixon",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "yaml": "^2.5.1"
+  }
 }
