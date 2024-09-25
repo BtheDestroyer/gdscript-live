@@ -1,4 +1,5 @@
 const { exec } = require("child_process");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
@@ -48,8 +49,22 @@ module.exports = {
                 api.sendResponse(res, 400, {error:"Invalid 'godot_version' parameter", godot_version: params["godot_version"]});
                 return true;
             }
+            const script_hash = crypto.createHash("sha256").update(params["script"] + params["godot_version"]).digest("hex");
+            var dir = `/tmp/gdscript.live/finished-${script_hash}`;
+            if (fs.existsSync(dir))
+            {
+                try
+                {
+                    api.sendResponse(res, 200, {error:"", script_hash, stdout: fs.readFileSync(path.join(dir, "stdout"), "utf8").toString(), stderr: fs.readFileSync(path.join(dir, "stderr"), "utf8").toString() });
+                    return true;
+                }
+                catch (error)
+                {
+                    // rerun
+                }
+            }
             var id = make_id(16);
-            var dir = path.join("/tmp/gdscript.live", id);
+            dir = path.join("/tmp/gdscript.live", id);
             while (fs.existsSync(dir))
             {
                 id = make_id(16);
@@ -85,6 +100,13 @@ module.exports = {
                         const {stdout, stderr} = await execAsync(`docker logs ${container_id}`);
                         api.sendResponse(res, 200, {error:"", script: script_contents, godot_version: process["godot_version"], stdout, stderr });
                         finished = true;
+                        var cache_dir = `/tmp/gdscript.live/finished-${script_hash}`;
+                        if (!fs.existsSync(cache_dir))
+                        {
+                            fs.mkdirSync(cache_dir, {recursive: true});
+                        }
+                        fs.writeFileSync(path.join(cache_dir, "stdout"), stdout, "utf8");
+                        fs.writeFileSync(path.join(cache_dir, "stderr"), stderr, "utf8");
                         break;
                     }
                     await sleep(1000);
