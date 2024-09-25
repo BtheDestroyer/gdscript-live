@@ -11,6 +11,7 @@ func get_options() -> Dictionary:
     )
   return options
 
+var initialized := false
 func _initialize():
   var user_script := load("/mnt/user/script.gd") as GDScript
   if not user_script:
@@ -28,7 +29,13 @@ func _initialize():
     push_error("User script has no entrypoint: ", entrypoint)
     quit(3)
     return
+  initialized = true
   var user_return = await script_instance.call(entrypoint)
   if user_return != null:
     print("Returned: ", user_return)
   quit(0)
+
+func _process(_delta):
+  if not initialized:
+    quit(4)
+
