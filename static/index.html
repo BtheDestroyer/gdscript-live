@@ -1,9 +1,80 @@
 <!DOCTYPE html>
+<html>
 <head>
-<title>GDScript.Live</title>
+    <title>GDScript.Live</title>
+    <style>
+        html, body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .flex-h {
+            display: flex;
+            flex-direction: row;
+            column-gap: 2px;
+        }
+        .flex-h>* {
+            height: 500px;
+        }
+        .monaco {
+            width: 100%;
+            height: 100%;
+        }
+        #code-editor {
+            background: gray;
+            overflow: hidden;
+        }
+        #control-panel {
+            background: gray;
+        }
+        .handle {
+            width: 8px;
+            border-radius: 4px;
+            background: darkgray;
+        }
+    </style>
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="/static/node_modules/monaco-editor/min/vs/editor/editor.main.css" />
+    <script>
+        var require = { paths: { vs: '/static/node_modules/monaco-editor/min/vs' } };
+    </script>
+    <script src="/static/node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script src="/static/node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>GDScript.Live</h1>
-<p>Currently under development</p>
+    <h1>GDScript.Live</h1>
+    <p>Currently under development</p>
+    <div class="flex-h">
+        <div id="code-editor" class="split-section"></div>
+        <div class="handle"></div>
+        <div id="control-panel" class="split-section"></div>
+    </div>
+
+    <script>
+        const editor = monaco.editor.create($("#code-editor")[0], {
+            value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+            language: 'javascript',
+            automaticLayout: true
+        });
+        // TODO: add syntax highlighting for monaco (likely with monarch)
+    </script>
+    <script>
+        var handle_ratio = 0.5;
+        // TODO: Dragging handle should store the final ratio in handle_ratio and resize #code-editor and #control-panel
+        function onResize() {
+            $(".flex-h>*").height(window.innerHeight - $(".flex-h").position().top);
+            $("#code-editor").width((window.innerWidth - 12) * handle_ratio);
+            $("#control-panel").width((window.innerWidth - 12) * (1.0 - handle_ratio));
+        }
+        $(window).resize(onResize);
+        onResize();
+    </script>
 </body>
+</html>
 

@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "mime-types": "^2.1.35",
+    "monaco-editor": "^0.52.0",
     "yaml": "^2.5.1"
   }
 }

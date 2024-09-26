@@ -21,6 +21,13 @@ module.exports = {
             }
             return false;
         };
+        endpoints[/^\/vs\/.+$/] = async (req, res) => {
+            res.writeHead(302, {
+                    "location": path.join("/static/node_modules/monaco-editor/min/", req.url)
+                });
+            res.end();
+            return true;
+        };
         endpoints["/"] = async (req, res) => {
             const requested_path = path.resolve(path.join(process.cwd(), "static/index.html"));
             if (fs.existsSync(requested_path))
