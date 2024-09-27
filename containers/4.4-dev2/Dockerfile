@@ -1,4 +1,4 @@
-FROM debian
+FROM gdscript-live/godot:base
 WORKDIR /app
 COPY . .
 RUN apt-get -y update; apt-get -y install curl unzip fontconfig

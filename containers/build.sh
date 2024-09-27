@@ -9,6 +9,6 @@ for version in $(ls -d $FOLDER/*/ | grep -ve "base/$"); do
 done
 
 for image in $(docker images -f "dangling=true" -q); do
-    docker rmi $image
+    docker rmi -f $image
 done
 

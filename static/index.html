@@ -17,8 +17,10 @@
             flex-direction: row;
             column-gap: 2px;
         }
-        .flex-h>* {
-            height: 500px;
+        .flex-v {
+            display: flex;
+            flex-direction: column;
+            row-gap: 2px;
         }
         .monaco {
             width: 100%;
@@ -29,12 +31,26 @@
             overflow: hidden;
         }
         #control-panel {
+            flex: 1 1 auto;
             background: gray;
+            display: flex;
+            align-items: stretch;
         }
         .handle {
             width: 8px;
             border-radius: 4px;
             background: darkgray;
+        }
+        #control-panel textarea {
+            flex: 1 1 auto;
+            width: 100%;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            resize: none;
+        }
+        #script-results {
+            flex: 1 1 auto;
         }
     </style>
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="/static/node_modules/monaco-editor/min/vs/editor/editor.main.css" />
@@ -50,10 +66,23 @@
 <body>
     <h1>GDScript.Live</h1>
     <p>Currently under development</p>
-    <div class="flex-h">
+    <div class="flex-h" id="main-split">
         <div id="code-editor" class="split-section"></div>
         <div class="handle"></div>
-        <div id="control-panel" class="split-section"></div>
+        <div id="control-panel" class="flex-v split-section">
+            <div class="flex-h">
+                <label for="godot-version">Godot Version:</label>
+                <select name="godot-version" id="godot-version">
+                </select>
+                <input id="run-button" type="button" value="Run" onclick="runScript()" />
+            </div>
+            <div id="script-results" class="flex-v">
+                <label for="stdout">stdout:</label><br/>
+                <textarea id="stdout" name="stdout" readonly></textarea><br/>
+                <label for="stderr">stderr:</label><br/>
+                <textarea id="stderr" name="stderr" readonly></textarea>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -68,12 +97,58 @@
         var handle_ratio = 0.5;
         // TODO: Dragging handle should store the final ratio in handle_ratio and resize #code-editor and #control-panel
         function onResize() {
-            $(".flex-h>*").height(window.innerHeight - $(".flex-h").position().top);
+            $("#main-split>*").height(window.innerHeight - $(".flex-h").position().top);
             $("#code-editor").width((window.innerWidth - 12) * handle_ratio);
-            $("#control-panel").width((window.innerWidth - 12) * (1.0 - handle_ratio));
         }
         $(window).resize(onResize);
         onResize();
+
+        async function updateVersionList() {
+            try
+            {
+                const response = await fetch("/api/versions");
+                if (!response.ok)
+                {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+                const json = await response.json();
+                const select = $("select#godot-version");
+                select.empty();
+                console.log(`Got JSON from /api/versions: ${json}`);
+                for (const version of json["versions"])
+                {
+                    select.append(`<option value="${version}">${version}</option>`);
+                }
+            }
+            catch (error)
+            {
+                console.error(error);
+            }
+        }
+        updateVersionList();
+
+        async function runScript() {
+            console.log(editor.getValue());
+            $("#stdout, #stderr").html("Running script...");
+            try
+            {
+                const select = document.getElementById("godot-version");
+                const response = await fetch(`/api/run?script=${btoa(editor.getValue())}&godot_version=${select.value}`);
+                if (!response.ok)
+                {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+                const json = await response.json();
+                console.log(`Got JSON from /api/versions: ${json}`);
+                $("#stdout").html(json["stdout"]);
+                $("#stderr").html(json["stderr"]);
+            }
+            catch (error)
+            {
+                console.error(error);
+            }
+            
+        }
     </script>
 </body>
 </html>
