@@ -45,12 +45,6 @@
     </div>
 
     <script>
-        /*const editor = monaco.editor.create($("#code-editor")[0], {
-            value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-            language: 'javascript',
-            automaticLayout: true
-        });*/
-        // TODO: add syntax highlighting for monaco (likely with monarch)
         require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
         window.MonacoEnvironment = { getWorkerUrl: () => proxy };
 
@@ -109,15 +103,11 @@
             const aspect = window.innerWidth / window.innerHeight;
             if (aspect > 1.5)
             {
-                //$("#main-split").removeClass("flex-v").addClass("flex-h");
-                //$("#main-split.flex-h>*").width("");
                 $("#main-split.flex-h>.handle").css("width", "");
                 horizontal_layout = true
             }
             else if (aspect < 0.6)
             {
-                //$("#main-split").removeClass("flex-h").addClass("flex-v");
-                //$("#main-split.flex-v>*").height("");
                 $("#main-split.flex-v>.handle").css("height", "");
                 horizontal_layout = false;
             }
@@ -125,14 +115,10 @@
             const split_width = window.innerWidth;
             if (horizontal_layout)
             {
-                //$("#main-split.flex-h>*").height(split_height);
-                //$("#main-split.flex-h>.handle").css("height", `calc(${split_height}px - 2em`);
                 $(".flex-h>#code-editor").width((window.innerWidth - 12) * handle_ratio);
             }
             else
             {
-                //$("#main-split.flex-v>*").width(window.innerWidth);
-                //$("#main-split.flex-v>.handle").css("width", `calc(${window.innerWidth}px - 2em`);
                 $(".flex-v>#code-editor").height((split_height - 12) * handle_ratio);
             }
         }
@@ -150,7 +136,6 @@
                 const json = await response.json();
                 const select = $("select#godot-version");
                 select.empty();
-                console.log(`Got JSON from /api/versions: ${json}`);
                 for (const version of json["versions"])
                 {
                     select.append(`<option value="${version}">${version}</option>`);
@@ -164,7 +149,6 @@
         updateVersionList();
 
         async function runScript() {
-            console.log(editor.getValue());
             $("#stdout, #stderr").html("Running script...");
             try
             {
@@ -175,7 +159,6 @@
                     throw new Error(`Response status: ${response.status}`);
                 }
                 const json = await response.json();
-                console.log(`Got JSON from /api/versions: ${json}`);
                 $("#stdout").html(json["stdout"]);
                 $("#stderr").html(json["stderr"]);
             }
@@ -213,14 +196,12 @@
             {
                 const mouse_position = Math.max(min_size, Math.min(window.innerWidth - min_size, mouse_event.clientX));
                 handle_ratio = (mouse_position - handle.width() * 0.5) / (window.innerWidth - handle.width());
-                //handle_ratio = Math.max(0.2, Math.min(0.8, handle_ratio));
             }
             else
             {
                 const mouse_position = Math.max(min_size, Math.min($("#main-split").height() - min_size, mouse_event.clientY - $("#main-split").position().top));
                 handle_ratio = (mouse_position - handle.height() * 0.5) / ($("#main-split").height() - handle.height());
             }
-            console.log(`New ratio: ${handle_ratio}`);
             onResize();
         };
     </script>
