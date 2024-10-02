@@ -6,20 +6,20 @@
     </style>
     <link rel="stylesheet" href="/static/main.css" />
     <link rel="stylesheet" href="/static/colors.css" />
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="/static/node_modules/monaco-editor/min/vs/editor/editor.main.css" />
-    <script>
-        var require = { paths: { vs: '/static/node_modules/monaco-editor/min/vs' } };
-    </script>
-    <script src="/static/node_modules/monaco-editor/min/vs/loader.js"></script>
-    <script src="/static/node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
         crossorigin="anonymous"></script>
+   <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script> 
 </head>
 <body>
     <div class="header">
-        <h1>GDScript.Live</h1>
-        <p>Currently under development</p>
+        <div class="flex-h">
+            <img src="/static/gdscript-live.icon.png" class="icon" />
+            <div class="flex-v">
+                <h1 style="margin:0;">GDScript.Live</h1>
+                <p style="margin:0;">Currently under development</p>
+            </div>
+        </div>
     </div>
     <div class="flex-h" id="main-split">
         <div id="code-editor" class="split-section"></div>
@@ -45,12 +45,62 @@
     </div>
 
     <script>
-        const editor = monaco.editor.create($("#code-editor")[0], {
+        /*const editor = monaco.editor.create($("#code-editor")[0], {
             value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
             language: 'javascript',
             automaticLayout: true
-        });
+        });*/
         // TODO: add syntax highlighting for monaco (likely with monarch)
+        require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
+        window.MonacoEnvironment = { getWorkerUrl: () => proxy };
+
+        const proxy = URL.createObjectURL(new Blob([`
+            self.MonacoEnvironment = {
+                baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
+            };
+            importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');
+        `], { type: 'text/javascript' }));
+
+        var editor;
+        require(["vs/editor/editor.main"], function () {
+            monaco.languages.register({ id: "gdscript" });
+            monaco.languages.setMonarchTokensProvider("gdscript", {
+                keywords: [
+                    "if", "elif", "else",
+                    "for", "while", "match",
+                    "break", "continue", "pass",
+                    "return", "class", "class_name",
+                    "extends", "is", "in", "as",
+                    "self", "super", "signal", "func",
+                    "static", "const", "enum", "var",
+                    "breakpoint", "preload", "await",
+                    "yield", "assert", "void",
+                    "PI", "TAU", "INF", "NAN"
+                ],
+                tokenizer: {
+                    root: [
+                        [/@?[a-zA-Z][\w$]*/, {
+                            cases: {
+                                "@keywords": "keyword",
+                                "@default": "variable"
+                            }
+                        }],
+                        [/[&^]?".*?"/, "string"],
+                        [/#/, "comment"]
+                    ]
+                }
+            });
+            editor = monaco.editor.create(document.getElementById('code-editor'), {
+                value: [
+                    'func main():',
+                    '\tprint("Hello world!")',
+                    ''
+                ].join('\n'),
+                language: 'gdscript',
+                theme: 'vs-dark',
+                automaticLayout: true
+            });
+        });
     </script>
     <script>
         var handle_ratio = 0.5;

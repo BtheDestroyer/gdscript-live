@@ -2,6 +2,11 @@ body {
     color: #ddd;
     background: #222;
 }
+textarea {
+    color: #ddd;
+    background: #333;
+    border: 4px #444 solid;
+}
 .header {
     background: #333;
     border-bottom-color: #444;

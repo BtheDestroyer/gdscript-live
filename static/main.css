@@ -11,6 +11,9 @@ body {
     display: flex;
     flex-direction: column;
 }
+textarea#stdout, textarea#stderr {
+    font-family: mono;
+}
 .no-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -23,13 +26,21 @@ body {
     border-bottom-width: 0.5em;
     border-bottom-style: solid;
     margin-bottom: 0.5em;
-    padding: 0.5em 2em;
+    padding: 2em;
+}
+.header>div>* {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 .header>*:first-child {
     margin-top: 0;
 }
 .header>*:last-child {
     margin-bottom: 0;
+}
+.header .icon {
+    height: 4em;
+    margin-right: 1em;
 }
 .flex-h {
     display: flex;
