@@ -1,0 +1,121 @@
+html, body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.header {
+    border-bottom-width: 0.5em;
+    border-bottom-style: solid;
+    margin-bottom: 0.5em;
+    padding: 0.5em 2em;
+}
+.header>*:first-child {
+    margin-top: 0;
+}
+.header>*:last-child {
+    margin-bottom: 0;
+}
+.flex-h {
+    display: flex;
+    flex-direction: row;
+    column-gap: 2px;
+}
+.flex-v {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+}
+.monaco {
+    width: 100%;
+    height: 100%;
+}
+.flex-h>.split-section {
+    height: calc(100% - 0.5em);
+}
+.flex-v>.split-section {
+    width: 100%;
+}
+#main-split {
+    flex: 1 1 auto;
+}
+#code-editor {
+    background: gray;
+    overflow: hidden;
+}
+#control-panel {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: stretch;
+}
+.handle {
+    display: flex;
+    border-radius: 6px;
+}
+.flex-h>.handle {
+    width: 12px;
+    height: calc(100% - 2em);
+    margin: 1em 4px;
+    flex-direction: column;
+    row-gap: 16px;
+}
+.flex-v>.handle {
+    height: 12px;
+    width: calc(100% - 2em);
+    margin: 4px 1em;
+    flex-direction: row;
+    column-gap: 16px;
+}
+.handle-dot {
+    border-radius: 6px;
+    aspect-ratio: 1;
+}
+.flex-h .handle-dot {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.flex-h .handle-dot:first-child {
+    margin-top: auto;
+}
+.flex-h .handle-dot:last-child {
+    margin-bottom: auto;
+}
+.flex-v .handle-dot {
+    height: 75%;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.flex-v .handle-dot:first-child {
+    margin-left: auto;
+}
+.flex-v .handle-dot:last-child {
+    margin-right: auto;
+}
+#control-panel textarea {
+    flex: 1 1 auto;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    resize: none;
+}
+#script-results {
+    flex: 1 1 auto;
+}
+

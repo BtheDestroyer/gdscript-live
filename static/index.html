@@ -3,56 +3,9 @@
 <head>
     <title>GDScript.Live</title>
     <style>
-        html, body {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        .flex-h {
-            display: flex;
-            flex-direction: row;
-            column-gap: 2px;
-        }
-        .flex-v {
-            display: flex;
-            flex-direction: column;
-            row-gap: 2px;
-        }
-        .monaco {
-            width: 100%;
-            height: 100%;
-        }
-        #code-editor {
-            background: gray;
-            overflow: hidden;
-        }
-        #control-panel {
-            flex: 1 1 auto;
-            background: gray;
-            display: flex;
-            align-items: stretch;
-        }
-        .handle {
-            width: 8px;
-            border-radius: 4px;
-            background: darkgray;
-        }
-        #control-panel textarea {
-            flex: 1 1 auto;
-            width: 100%;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            resize: none;
-        }
-        #script-results {
-            flex: 1 1 auto;
-        }
     </style>
+    <link rel="stylesheet" href="/static/main.css" />
+    <link rel="stylesheet" href="/static/colors.css" />
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="/static/node_modules/monaco-editor/min/vs/editor/editor.main.css" />
     <script>
         var require = { paths: { vs: '/static/node_modules/monaco-editor/min/vs' } };
@@ -64,11 +17,17 @@
         crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>GDScript.Live</h1>
-    <p>Currently under development</p>
+    <div class="header">
+        <h1>GDScript.Live</h1>
+        <p>Currently under development</p>
+    </div>
     <div class="flex-h" id="main-split">
         <div id="code-editor" class="split-section"></div>
-        <div class="handle"></div>
+        <div class="handle">
+            <div class="handle-dot"></div>
+            <div class="handle-dot"></div>
+            <div class="handle-dot"></div>
+        </div>
         <div id="control-panel" class="flex-v split-section">
             <div class="flex-h">
                 <label for="godot-version">Godot Version:</label>
@@ -95,10 +54,37 @@
     </script>
     <script>
         var handle_ratio = 0.5;
-        // TODO: Dragging handle should store the final ratio in handle_ratio and resize #code-editor and #control-panel
+        var horizontal_layout = true;
         function onResize() {
-            $("#main-split>*").height(window.innerHeight - $(".flex-h").position().top);
-            $("#code-editor").width((window.innerWidth - 12) * handle_ratio);
+            const aspect = window.innerWidth / window.innerHeight;
+            if (aspect > 1.5)
+            {
+                //$("#main-split").removeClass("flex-v").addClass("flex-h");
+                //$("#main-split.flex-h>*").width("");
+                $("#main-split.flex-h>.handle").css("width", "");
+                horizontal_layout = true
+            }
+            else if (aspect < 0.6)
+            {
+                //$("#main-split").removeClass("flex-h").addClass("flex-v");
+                //$("#main-split.flex-v>*").height("");
+                $("#main-split.flex-v>.handle").css("height", "");
+                horizontal_layout = false;
+            }
+            const split_height = $("#main-split").height();
+            const split_width = window.innerWidth;
+            if (horizontal_layout)
+            {
+                //$("#main-split.flex-h>*").height(split_height);
+                //$("#main-split.flex-h>.handle").css("height", `calc(${split_height}px - 2em`);
+                $(".flex-h>#code-editor").width((window.innerWidth - 12) * handle_ratio);
+            }
+            else
+            {
+                //$("#main-split.flex-v>*").width(window.innerWidth);
+                //$("#main-split.flex-v>.handle").css("width", `calc(${window.innerWidth}px - 2em`);
+                $(".flex-v>#code-editor").height((split_height - 12) * handle_ratio);
+            }
         }
         $(window).resize(onResize);
         onResize();
@@ -147,8 +133,46 @@
             {
                 console.error(error);
             }
-            
         }
+        var dragging_handle = false;
+        const handle = $(".handle");
+        handle.on("mousedown", mouse_event => {
+            if (dragging_handle || mouse_event.button != 0)
+            {
+                return;
+            }
+            dragging_handle = true;
+            $("body").addClass("no-select");
+        });
+        document.onmouseup = mouse_event => {
+            if (!dragging_handle || mouse_event.button != 0)
+            {
+                return;
+            }
+            dragging_handle = false;
+            $("body").removeClass("no-select");
+        };
+        document.onmousemove = mouse_event => {
+            if (!dragging_handle)
+            {
+                return;
+            }
+            mouse_event = mouse_event || window.event;
+            const min_size = 300;
+            if (horizontal_layout)
+            {
+                const mouse_position = Math.max(min_size, Math.min(window.innerWidth - min_size, mouse_event.clientX));
+                handle_ratio = (mouse_position - handle.width() * 0.5) / (window.innerWidth - handle.width());
+                //handle_ratio = Math.max(0.2, Math.min(0.8, handle_ratio));
+            }
+            else
+            {
+                const mouse_position = Math.max(min_size, Math.min($("#main-split").height() - min_size, mouse_event.clientY - $("#main-split").position().top));
+                handle_ratio = (mouse_position - handle.height() * 0.5) / ($("#main-split").height() - handle.height());
+            }
+            console.log(`New ratio: ${handle_ratio}`);
+            onResize();
+        };
     </script>
 </body>
 </html>

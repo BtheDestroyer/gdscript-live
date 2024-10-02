@@ -1,0 +1,15 @@
+body {
+    color: #ddd;
+    background: #222;
+}
+.header {
+    background: #333;
+    border-bottom-color: #444;
+}
+.handle {
+    background: #444;
+}
+.handle-dot {
+    background: #666;
+}
+
