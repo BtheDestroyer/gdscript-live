@@ -52,6 +52,14 @@ textarea#stdout, textarea#stderr {
     flex-direction: column;
     row-gap: 2px;
 }
+.flex-h * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.flex-v * {
+    margin-left: auto;
+    margin-right: auto;
+}
 .monaco {
     width: 100%;
     height: 100%;
@@ -128,5 +136,8 @@ textarea#stdout, textarea#stderr {
 }
 #script-results {
     flex: 1 1 auto;
+}
+.no-margin, .flex-v.no-margin>*, .flex-h.no-margin>* {
+    margin: 0;
 }
 

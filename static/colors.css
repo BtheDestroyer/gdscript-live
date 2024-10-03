@@ -17,4 +17,11 @@ textarea {
 .handle-dot {
     background: #666;
 }
+a {
+    color: #aa8;
+    text-decoration: none;
+}
+a:hover {
+    color: #bbb;
+}
 

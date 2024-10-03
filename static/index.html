@@ -15,9 +15,18 @@
     <div class="header">
         <div class="flex-h">
             <img src="/static/gdscript-live.icon.png" class="icon" />
-            <div class="flex-v">
-                <h1 style="margin:0;">GDScript.Live</h1>
-                <p style="margin:0;">Currently under development</p>
+            <div class="flex-v no-margin" style="flex: 1 1 auto;">
+                <div class="flex-h" style="margin-left: 0; margin-right: auto; column-gap: 1em;">
+                    <h1 class="no-margin">GDScript.Live</h1>
+                    <h2><a href="https://docs.godotengine.org/en/latest/tutorials/scripting/gdscript/gdscript_basics.html" target="_blank">Docs</a></h2>
+                    <h2><a href="https://github.com/BtheDestroyer/gdscript-live/tree/node" target="_blank">Source</a></h2>
+                </div>
+                <hr/>
+                <div class="flex-v no-margin">
+                    <p>Currently under development</p>
+                    <p>GDScript.Live &copy; Bryce Dixon, 2024</p>
+                    <p>Godot Engine &copy; Juan Linietsky, Ariel Manzur and contributors</p>
+                </div>
             </div>
         </div>
     </div>
@@ -29,13 +38,13 @@
             <div class="handle-dot"></div>
         </div>
         <div id="control-panel" class="flex-v split-section">
-            <div class="flex-h">
+            <div class="flex-h no-margin">
                 <label for="godot-version">Godot Version:</label>
                 <select name="godot-version" id="godot-version">
                 </select>
                 <input id="run-button" type="button" value="Run" onclick="runScript()" />
             </div>
-            <div id="script-results" class="flex-v">
+            <div id="script-results" class="flex-v no-margin">
                 <label for="stdout">stdout:</label><br/>
                 <textarea id="stdout" name="stdout" readonly></textarea><br/>
                 <label for="stderr">stderr:</label><br/>
