@@ -1,7 +1,5 @@
 FROM gdscript-live/godot:base
-WORKDIR /app
 COPY . .
-RUN apt-get -y update; apt-get -y install curl unzip fontconfig
 RUN curl https://github.com/godotengine/godot-builds/releases/download/4.4-dev2/Godot_v4.4-dev2_linux.x86_64.zip -Lo /app/godot.zip
 RUN unzip /app/godot.zip
 RUN rm /app/godot.zip
