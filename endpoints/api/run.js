@@ -76,7 +76,7 @@ module.exports = {
             var container_id = "";
             try
             {
-                const command = `docker run -d --cpus="0.5" --memory=256m --network=none -v "${dir}:/mnt/user/" "gdscript-live/godot:${params["godot_version"]}"`;
+                const command = `docker run -d --cpus="1" --memory=1G --network=none -v "${dir}:/mnt/user/" "gdscript-live/godot:${params["godot_version"]}"`;
                 const {stdout, stderr} = await execAsync(command);
                 container_id = `${stdout}`.trim();
             }
