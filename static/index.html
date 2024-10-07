@@ -80,18 +80,42 @@
                     "yield", "assert", "void",
                     "PI", "TAU", "INF", "NAN"
                 ],
+                
                 tokenizer: {
                     root: [
-                        [/@?[a-zA-Z][\w$]*/, {
+                        [/\@[a-zA-Z_]*/, "annotation"],
+                        [/[a-zA-Z_]\w*/, {
                             cases: {
                                 "@keywords": "keyword",
                                 "@default": "variable"
                             }
                         }],
-                        [/[&^]?".*?"/, "string"],
-                        [/#/, "comment"]
+                        [/\^"[^"\n]*"?/, "node-path"],
+                        [/\^[^\s"]*/, "node-path"],
+                        [/&"[^"\n]*"?/, "string-name"],
+                        [/r?"""[^\n]*("""|\n)/, "string"],
+                        [/r?'''[^\n]*('''|\n)/, "string"],
+                        [/r?"[^"\n]*"?/, "string"],
+                        [/r?'[^'\n]*'?/, "string"],
+                        [/##[^\n]*/, "doc-comment"],
+                        [/#[^\n]*/, "comment"],
                     ]
                 }
+            });
+            monaco.editor.defineTheme("gdscript", {
+                base: "vs-dark",
+                inherit: true,
+                rules: [
+                    { token: "keyword", foreground: "#ff7085", fontStyle: "bold" },
+                    { token: "annotation", foreground: "#ffb373", fontStyle: "bold" },
+                    { token: "string-name", foreground: "#cc9e3b" },
+                    { token: "node-path", foreground: "#cceea1" },
+                    { token: "string", foreground: "#ffeca1" },
+                    { token: "doc-comment", foreground: "#ccccee88", fontStyle: "italic" },
+                    { token: "comment", foreground: "#ccced388", fontStyle: "italic" },
+                    { token: "variable", foreground: "#ffffff" },
+                ],
+                colors: {}
             });
             editor = monaco.editor.create(document.getElementById('code-editor'), {
                 value: [
@@ -100,7 +124,7 @@
                     ''
                 ].join('\n'),
                 language: 'gdscript',
-                theme: 'vs-dark',
+                theme: 'gdscript',
                 automaticLayout: true
             });
         });

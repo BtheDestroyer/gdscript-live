@@ -106,8 +106,7 @@ textarea#stdout, textarea#stderr {
 }
 .flex-h .handle-dot {
     width: 75%;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
 }
 .flex-h .handle-dot:first-child {
     margin-top: auto;
