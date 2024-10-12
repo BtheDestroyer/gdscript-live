@@ -43,6 +43,7 @@
                 <select name="godot-version" id="godot-version">
                 </select>
                 <input id="run-button" type="button" value="Run" onclick="runScript()" />
+                <input id="share-button" type="button" value="Share" onclick="shareScript()" />
             </div>
             <div id="script-results" class="flex-v no-margin">
                 <label for="stdout">stdout:</label><br/>
@@ -54,6 +55,13 @@
     </div>
 
     <script>
+        const query_params = location.search.substr(1).split("&").reduce((a, c) => {
+                const kvp_split = c.indexOf("=");
+                const [key, value] = (kvp_split != -1 ? [c.substr(0, kvp_split), c.substr(kvp_split + 1)] : [c, undefined]);
+                a[key] = decodeURIComponent(value);
+                return a;
+            }, {});
+
         require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
         window.MonacoEnvironment = { getWorkerUrl: () => proxy };
 
@@ -118,11 +126,13 @@
                 colors: {}
             });
             editor = monaco.editor.create(document.getElementById('code-editor'), {
-                value: [
-                    'func main():',
-                    '\tprint("Hello world!")',
-                    ''
-                ].join('\n'),
+                value: ("script" in query_params
+                    ? atob(query_params["script"])
+                    : [
+                        'func main():',
+                        '\tprint("Hello world!")',
+                        ''
+                    ].join('\n')),
                 language: 'gdscript',
                 theme: 'gdscript',
                 automaticLayout: true
@@ -172,6 +182,10 @@
                 for (const version of json["versions"])
                 {
                     select.append(`<option value="${version}">${version}</option>`);
+                    if ("version" in query_params && version == decodeURIComponent(query_params["version"]))
+                    {
+                        select.val(version);
+                    }
                 }
             }
             catch (error)
@@ -199,6 +213,14 @@
             {
                 console.error(error);
             }
+        }
+        async function shareScript() {
+            location.href = location.href.split("?")[0] + "?" + Object.entries({
+                "script": btoa(editor.getValue()),
+                "version": $("select#godot-version").val()
+            }).map(kvp => kvp[1] == undefined ? `${kvp[0]}` : `${kvp[0]}=${encodeURIComponent(kvp[1])}`)
+                .join("&");
+            navigator.clipboard.writeText(location.href);
         }
         var dragging_handle = false;
         const handle = $(".handle");
