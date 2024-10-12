@@ -182,7 +182,7 @@
                 for (const version of json["versions"])
                 {
                     select.append(`<option value="${version}">${version}</option>`);
-                    if ("version" in query_params && version == decodeURIComponent(query_params["version"]))
+                    if ("godot_version" in query_params && version == decodeURIComponent(query_params["godot_version"]))
                     {
                         select.val(version);
                     }
@@ -214,13 +214,14 @@
                 console.error(error);
             }
         }
-        async function shareScript() {
-            location.href = location.href.split("?")[0] + "?" + Object.entries({
+        function shareScript() {
+            const url = "/?" + Object.entries({
                 "script": btoa(editor.getValue()),
-                "version": $("select#godot-version").val()
+                "godot_version": $("select#godot-version").val()
             }).map(kvp => kvp[1] == undefined ? `${kvp[0]}` : `${kvp[0]}=${encodeURIComponent(kvp[1])}`)
                 .join("&");
-            navigator.clipboard.writeText(location.href);
+            window.history.pushState("Shared Script", "", url);
+            navigator.clipboard.writeText(location.origin + url);
         }
         var dragging_handle = false;
         const handle = $(".handle");
