@@ -133,7 +133,7 @@ textarea#stdout, textarea#stderr {
     box-sizing: border-box;
     resize: none;
 }
-#script-results {
+#script-results, .stdout, .stderr {
     flex: 1 1 auto;
 }
 .no-margin, .flex-v.no-margin>*, .flex-h.no-margin>* {

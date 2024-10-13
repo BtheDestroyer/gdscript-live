@@ -46,10 +46,14 @@
                 <input id="share-button" type="button" value="Share" onclick="shareScript()" />
             </div>
             <div id="script-results" class="flex-v no-margin">
-                <label for="stdout">stdout:</label><br/>
-                <textarea id="stdout" name="stdout" readonly></textarea><br/>
-                <label for="stderr">stderr:</label><br/>
-                <textarea id="stderr" name="stderr" readonly></textarea>
+                <div class="stdout flex-v no-margin">
+                    <label for="stdout">stdout:</label>
+                    <textarea id="stdout" name="stdout" readonly></textarea>
+                </div>
+                <div class="stderr flex-v no-margin" style="display: none;">
+                    <label for="stderr">stderr:</label>
+                    <textarea id="stderr" name="stderr" readonly></textarea>
+                </div>
             </div>
         </div>
     </div>
@@ -71,7 +75,15 @@
                 }
                 const json = await response.json();
                 $("#stdout").html(json["stdout"]);
-                $("#stderr").html(json["stderr"]);
+                if (json["stderr"].length == 0)
+                {
+                    $("div.stderr").hide();
+                }
+                else
+                {
+                    $("div.stderr").show();
+                    $("#stderr").html(json["stderr"]);
+                }
             }
             catch (error)
             {
