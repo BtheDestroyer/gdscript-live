@@ -2,15 +2,19 @@ var handle_ratio = 0.5;
 var horizontal_layout = true;
 function onResize() {
     const aspect = window.innerWidth / window.innerHeight;
-    if (aspect > 1.5)
+    if (aspect > 1.15)
     {
-        $("#main-split.flex-h>.handle").css("width", "");
+        $("#main-split>.handle").css("width", "");
+        $("#main-split #code-editor").css("height", "");
         horizontal_layout = true
+        $("#main-split").addClass("flex-h").removeClass("flex-v");
     }
-    else if (aspect < 0.6)
+    else if (aspect < 0.85)
     {
-        $("#main-split.flex-v>.handle").css("height", "");
+        $("#main-split>.handle").css("height", "");
+        $("#main-split #code-editor").css("width", "");
         horizontal_layout = false;
+        $("#main-split").addClass("flex-v").removeClass("flex-h");
     }
     const split_height = $("#main-split").height();
     const split_width = window.innerWidth;
