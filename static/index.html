@@ -38,12 +38,18 @@
             <div class="handle-dot"></div>
         </div>
         <div id="control-panel" class="flex-v split-section">
-            <div class="flex-h no-margin">
-                <label for="godot-version">Godot Version:</label>
-                <select name="godot-version" id="godot-version">
-                </select>
-                <input id="run-button" type="button" value="Run" onclick="runScript()" />
-                <input id="share-button" type="button" value="Share" onclick="shareScript()" />
+            <div class="flex-v no-margin">
+                <div class="flex-h no-margin">
+                    <label for="godot-version">Godot Version:</label>
+                    <select name="godot-version" id="godot-version">
+                    </select>
+                </div>
+                <div class="flex-h no-margin">
+                    <input id="share-button" type="button" name="share" value="Share" onclick="shareScript()" />
+                    <input id="run-button" type="button" name="run" value="Run" onclick="runScript()" />
+                    <input id="no-cache-checkbox" type="checkbox" name="clear-cache" value="Clear Cache" />
+                    <label for="clear-cache">Clear Cache</label>
+                </div>
             </div>
             <div id="script-results" class="flex-v no-margin">
                 <div class="stdout flex-v no-margin">
@@ -68,7 +74,12 @@
             try
             {
                 const select = document.getElementById("godot-version");
-                const response = await fetch(`/api/run?script=${btoa(editor.getValue())}&godot_version=${select.value}`);
+                var api_page = `/api/run?script=${btoa(editor.getValue())}&godot_version=${select.value}`;
+                if ($("#no-cache-checkbox").is(":checked"))
+                {
+                    api_page += "&no_cache";
+                }
+                const response = await fetch(api_page);
                 if (!response.ok)
                 {
                     throw new Error(`Response status: ${response.status}`);

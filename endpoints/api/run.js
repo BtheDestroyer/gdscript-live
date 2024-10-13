@@ -50,12 +50,17 @@ module.exports = {
                 return true;
             }
             const script_hash = crypto.createHash("sha256").update(params["script"] + params["godot_version"]).digest("hex");
-            var dir = `/tmp/gdscript.live/finished-${script_hash}`;
-            if (fs.existsSync(dir))
+            var cache_dir = `/tmp/gdscript.live/finished-${script_hash}`;
+            if (!("no_cache" in params) && fs.existsSync(cache_dir))
             {
                 try
                 {
-                    api.sendResponse(res, 200, {error:"", script_hash, stdout: fs.readFileSync(path.join(dir, "stdout"), "utf8").toString(), stderr: fs.readFileSync(path.join(dir, "stderr"), "utf8").toString() });
+                    api.sendResponse(res, 200, {
+                            error:"",
+                            script_hash,
+                            stdout: fs.readFileSync(path.join(cache_dir, "stdout"), "utf8").toString(),
+                            stderr: fs.readFileSync(path.join(cache_dir, "stderr"), "utf8").toString()
+                        });
                     return true;
                 }
                 catch (error)
@@ -100,7 +105,6 @@ module.exports = {
                         const {stdout, stderr} = await execAsync(`docker logs ${container_id}`);
                         api.sendResponse(res, 200, {error:"", script: script_contents, godot_version: process["godot_version"], stdout, stderr });
                         finished = true;
-                        var cache_dir = `/tmp/gdscript.live/finished-${script_hash}`;
                         if (!fs.existsSync(cache_dir))
                         {
                             fs.mkdirSync(cache_dir, {recursive: true});
