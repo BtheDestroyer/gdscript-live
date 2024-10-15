@@ -9,7 +9,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
         crossorigin="anonymous"></script>
-   <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script> 
+    <script src="http://requirejs.org/docs/release/2.1.5/comments/require.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs/loader.min.js"></script> 
 </head>
 <body>
     <div class="header">
@@ -60,6 +61,10 @@
                     <label for="stderr">stderr:</label>
                     <textarea id="stderr" name="stderr" readonly></textarea>
                 </div>
+                <div class="profiler flex-v no-margin" style="display: none;">
+                    <label for="profiler">Profiler:</label>
+                    <canvas id="profiler" style="width:100%;max-width:700px"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -68,6 +73,7 @@
     <script src="/static/editor_setup.js"></script>
     <script src="/static/split_view.js"></script>
     <script src="/static/version_list.js"></script>
+    <script src="/static/profiler.js"></script>
     <script>
         async function runScript() {
             $("#stdout, #stderr").html("Running script...");
@@ -94,6 +100,15 @@
                 {
                     $("div.stderr").show();
                     $("#stderr").html(json["stderr"]);
+                }
+                if (json["profile_results"].length == 0)
+                {
+                    $("div.profiler").hide();
+                }
+                else
+                {
+                    $("div.profiler").show();
+                    updateChart(json["profile_results"]);
                 }
             }
             catch (error)

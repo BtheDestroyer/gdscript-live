@@ -60,7 +60,7 @@ module.exports = {
                             script_hash,
                             stdout: fs.readFileSync(path.join(cache_dir, "stdout"), "utf8").toString(),
                             stderr: fs.readFileSync(path.join(cache_dir, "stderr"), "utf8").toString(),
-                            profile_results: JSON.parse(fs.readFileSync(path.join(cache_dir, "profiler"), "utf8").toString())
+                            profile_results: fs.existsSync(path.join(cache_dir, "profiler")) ? JSON.parse(fs.readFileSync(path.join(cache_dir, "profiler"), "utf8").toString()) : []
                         });
                     return true;
                 }
