@@ -59,7 +59,8 @@ module.exports = {
                             error:"",
                             script_hash,
                             stdout: fs.readFileSync(path.join(cache_dir, "stdout"), "utf8").toString(),
-                            stderr: fs.readFileSync(path.join(cache_dir, "stderr"), "utf8").toString()
+                            stderr: fs.readFileSync(path.join(cache_dir, "stderr"), "utf8").toString(),
+                            profile_results: JSON.parse(fs.readFileSync(path.join(cache_dir, "profiler"), "utf8").toString())
                         });
                     return true;
                 }
@@ -69,14 +70,17 @@ module.exports = {
                 }
             }
             var id = make_id(16);
-            dir = path.join("/tmp/gdscript.live", id);
+            var dir = path.join("/tmp/gdscript.live", id);
             while (fs.existsSync(dir))
             {
                 id = make_id(16);
                 dir = path.join("/tmp/gdscript.live", id);
             }
             fs.mkdirSync(dir, {recursive: true});
-            const script_contents = Buffer.from(params["script"], "base64").toString("utf8")
+            const script_contents = [
+                Buffer.from(params["script"], "base64").toString("utf8"),
+                "var GDScriptLive: SceneTree = Engine.get_main_loop()"
+            ].join("\n")
             fs.writeFileSync(path.join(dir, "script.gd"), script_contents);
             var container_id = "";
             try
@@ -103,7 +107,14 @@ module.exports = {
                     if (running_status == "false")
                     {
                         const {stdout, stderr} = await execAsync(`docker logs ${container_id}`);
-                        api.sendResponse(res, 200, {error:"", script: script_contents, godot_version: process["godot_version"], stdout, stderr });
+                        api.sendResponse(res, 200, {
+                            error:"",
+                            script: script_contents,
+                            godot_version: process["godot_version"],
+                            stdout,
+                            stderr,
+                            profile_results: JSON.parse(fs.readFileSync(path.join(dir, "profiler"), "utf8").toString())
+                        });
                         finished = true;
                         if (!fs.existsSync(cache_dir))
                         {
@@ -111,6 +122,7 @@ module.exports = {
                         }
                         fs.writeFileSync(path.join(cache_dir, "stdout"), stdout, "utf8");
                         fs.writeFileSync(path.join(cache_dir, "stderr"), stderr, "utf8");
+                        fs.copyFileSync(path.join(dir, "profiler"), path.join(cache_dir, "profiler"));
                         break;
                     }
                     await sleep(1000);
