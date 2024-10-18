@@ -10,8 +10,7 @@ function updateChart(profile_results) {
         {
             colors.push(`#${Math.round(255 - Math.random() * 128).toString(16)}${Math.round(255 - Math.random() * 128).toString(16)}${Math.round(255 - Math.random() * 128).toString(16)}`);
         }
-        console.log(profile_results);
-        console.log(colors);
+        const max_values = profile_results.map(result => result.max_msec);
         chart = new Chart(document.getElementById("profiler"), {
             type: "bar",
             data: {
@@ -20,7 +19,8 @@ function updateChart(profile_results) {
                     {
                         label: "Minimum (ms)",
                         backgroundColor: colors,
-                        data: profile_results.map(result => result.min_msec)
+                        data: profile_results.map(result => result.min_msec),
+                        hidden: true
                     },
                     {
                         label: "Average (ms)",
@@ -30,15 +30,18 @@ function updateChart(profile_results) {
                     {
                         label: "Max (ms)",
                         backgroundColor: colors,
-                        data: profile_results.map(result => result.max_msec)
+                        data: max_values,
+                        hidden: true
                     }
                 ]
             },
             options: {
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    yAxes: [
+                        { ticks: { beginAtZero: true }, display: true },
+                        { ticks: { beginAtZero: true }, display: false },
+                        { ticks: { beginAtZero: true }, display: false }
+                    ]
                 }
             }
         });
