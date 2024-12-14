@@ -72,7 +72,7 @@ require(["vs/editor/editor.main"], function () {
                 value: ("script" in query_params
                     ? atob(query_params["script"])
                     : [
-                        'func main():',
+                        'func main() -> void:',
                         '\tprint("Hello world!")',
                         ''
                     ].join('\n')),
